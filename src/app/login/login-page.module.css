@@ -1,0 +1,45 @@
+﻿.layout {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+  align-items: start;
+}
+
+.intro {
+  display: grid;
+  gap: 18px;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 4vw, 4.4rem);
+  letter-spacing: -0.06em;
+}
+
+.intro p {
+  color: var(--color-muted);
+  max-width: 760px;
+}
+
+.externalCard {
+  padding: 28px;
+  display: grid;
+  gap: 14px;
+}
+
+.externalCard h2 {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

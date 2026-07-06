@@ -1,0 +1,26 @@
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.statCard {
+  padding: 22px;
+}
+
+.statCard strong {
+  display: block;
+  color: var(--color-accent);
+  font-size: 2rem;
+}
+
+.statCard span {
+  color: var(--color-muted);
+  font-weight: 650;
+}
+
+@media (max-width: 980px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}

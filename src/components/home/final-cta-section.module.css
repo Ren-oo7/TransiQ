@@ -1,0 +1,38 @@
+.section {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(84, 226, 203, 0.18), transparent 32%),
+    linear-gradient(135deg, #061427, #08213e 55%, #0b4f79);
+  color: white;
+  text-align: center;
+}
+
+.content {
+  max-width: 1050px;
+}
+
+.lead {
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.disclaimer {
+  color: rgba(255, 255, 255, 0.66);
+  max-width: 860px;
+  margin: 22px auto 0;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 640px) {
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
