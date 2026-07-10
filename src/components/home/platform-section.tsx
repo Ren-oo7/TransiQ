@@ -6,21 +6,21 @@ export function PlatformSection() {
     <section className="section sectionAlt">
       <div className="shell">
         <div className="sectionHeading">
-          <p className="eyebrow sectionEyebrow">Sistema de gestion inteligente</p>
+          <p className="eyebrow sectionEyebrow">Sistema de gestión inteligente</p>
           <h2>Una plataforma para operar el sistema, no solo para diagnosticarlo.</h2>
           <p>
-            TransiQ debe posicionarse como un ecosistema: diagnostico, control
-            documental, gestion de evidencias, auditorias, acciones, riesgos,
+            TransiQ debe posicionarse como un ecosistema: diagnóstico, control
+            documental, gestión de evidencias, auditorías, acciones, riesgos,
             indicadores y reportes ejecutivos.
           </p>
         </div>
 
         <div className={styles.layout}>
           <div className={`cardSurface ${styles.copy}`}>
-            <h3>Modulos funcionales propuestos</h3>
+            <h3>Módulos funcionales propuestos</h3>
             <p>
-              El MVP debe ser comercialmente util desde el primer dia y escalable
-              hacia una plataforma SaaS multinorma y multipais.
+              El MVP debe ser comercialmente útil desde el primer día y escalable
+              hacia una plataforma SaaS multinorma y multipaís.
             </p>
             <div className={styles.tags}>
               {platformModules.map((item) => (

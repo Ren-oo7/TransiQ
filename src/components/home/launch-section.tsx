@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { launchCalendar, launchFunnel, launchHooks } from "@/data/site-content";
+import { buildAttributedHref } from "@/lib/lead-attribution";
 import styles from "./launch-section.module.css";
 
 export function LaunchSection() {
@@ -8,9 +9,9 @@ export function LaunchSection() {
       <div className="shell">
         <div className="sectionHeading">
           <p className="eyebrow sectionEyebrow">Documento de lanzamiento integrado</p>
-          <h2>Bloques recomendados para landing, campanas y salida comercial.</h2>
+          <h2>Bloques recomendados para landing, campañas y salida comercial.</h2>
           <p>
-            Estos contenidos pueden ubicarse en la landing principal, paginas por
+            Estos contenidos pueden ubicarse en la landing principal, páginas por
             norma y materiales de pre-lanzamiento.
           </p>
         </div>
@@ -18,19 +19,19 @@ export function LaunchSection() {
         <div className={styles.layout}>
           <article className={`cardSurface ${styles.card} ${styles.primary}`}>
             <p className="miniLabel">Claim principal</p>
-            <h3>La nueva generacion ISO ya comenzo.</h3>
+            <h3>La nueva generación ISO ya comenzó.</h3>
             <p>
-              Prepara tu transicion ISO 9001:2026, ISO 14001:2026, ISO 45001,
-              ISO 37001:2025 y sistemas integrados con diagnostico digital,
-              analisis de brechas y plan de accion.
+              Prepara tu transición ISO 9001:2026, ISO 14001:2026, ISO 45001,
+              ISO 37001:2025 y sistemas integrados con diagnóstico digital,
+              análisis de brechas y plan de acción.
             </p>
-            <Link className="button buttonPrimary" href="/diagnostico">
-              Realiza tu diagnostico
+            <Link className="button buttonPrimary" href={buildAttributedHref("/diagnostico", { canal: "bloque-lanzamiento" })}>
+              Realiza tu diagnóstico
             </Link>
           </article>
 
           <article className={`cardSurface ${styles.card}`}>
-            <h3>Hooks para campana</h3>
+            <h3>Hooks para campaña</h3>
             <ul>
               {launchHooks.map((item) => (
                 <li key={item}>{item}</li>

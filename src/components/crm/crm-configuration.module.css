@@ -1,0 +1,228 @@
+.wrapper {
+  display: grid;
+  gap: 24px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr);
+  gap: 18px;
+}
+
+.heroCard,
+.highlightCard,
+.metricCard,
+.panelCard {
+  padding: 24px;
+}
+
+.heroCard,
+.highlightCard,
+.metricCard,
+.panelCard {
+  display: grid;
+  gap: 12px;
+}
+
+.heroCard h1,
+.sectionHeader h2 {
+  margin: 0;
+}
+
+.heroCard p,
+.highlightCard p,
+.metricCard p,
+.detailList li,
+.notesList li {
+  color: var(--color-muted);
+}
+
+.heroCard p,
+.highlightCard p,
+.metricCard p,
+.detailList li {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.heroCard h1 {
+  font-size: clamp(2rem, 3.6vw, 3.5rem);
+  letter-spacing: -0.05em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip,
+.roleBadge,
+.tagList li {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.chip,
+.tagList li {
+  border: 1px solid rgba(12, 134, 199, 0.14);
+  background: rgba(12, 134, 199, 0.08);
+  color: #0b4f79;
+}
+
+.roleBadge {
+  background: rgba(183, 121, 31, 0.12);
+  color: var(--color-warning);
+}
+
+.highlightCard {
+  align-content: start;
+  background: linear-gradient(180deg, #0b4f79, #08213e);
+  color: var(--color-text-inverse);
+}
+
+.highlightCard p,
+.highlightMeta,
+.highlightLabel {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.highlightLabel {
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.highlightValue,
+.metricValue {
+  font-size: clamp(2.3rem, 4vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.metricGrid,
+.dualGrid,
+.catalogGrid,
+.roleGrid {
+  display: grid;
+  gap: 18px;
+}
+
+.metricGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dualGrid,
+.catalogGrid,
+.roleGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.catalogCard,
+.roleCard {
+  padding: 16px;
+  border-radius: 16px;
+  background: #f6fafd;
+  display: grid;
+  gap: 12px;
+}
+
+.tagList,
+.notesList,
+.detailList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.notesList {
+  display: grid;
+  gap: 10px;
+}
+
+.notesList li {
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.55;
+}
+
+.notesList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #0c86c7;
+}
+
+.detailList {
+  display: grid;
+  gap: 12px;
+}
+
+.detailList li strong {
+  color: var(--color-text);
+}
+
+.roleTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 1180px) {
+  .metricGrid,
+  .catalogGrid,
+  .roleGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  .hero,
+  .metricGrid,
+  .dualGrid,
+  .catalogGrid,
+  .roleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeader,
+  .roleTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .heroCard,
+  .highlightCard,
+  .metricCard,
+  .panelCard {
+    padding: 20px;
+  }
+}

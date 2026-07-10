@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Sora, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { AppFrame } from "@/components/app-frame";
 
 const sora = Sora({
   variable: "--font-sora",
@@ -16,9 +15,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TransiQ | Sitio comercial y captacion digital",
+  title: "TransiQ | Sitio comercial y captación digital",
   description:
-    "Sitio comercial para captacion, diagnostico y conversion de oportunidades alrededor de TransiQ.",
+    "Sitio comercial para captación, diagnóstico y conversión de oportunidades alrededor de TransiQ.",
 };
 
 export default function RootLayout({
@@ -29,9 +28,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${sora.variable} ${plexMono.variable}`}>
       <body>
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+        <AppFrame>{children}</AppFrame>
       </body>
     </html>
   );

@@ -60,8 +60,8 @@ const basePlan = [
   {
     phase: "1. Diagnostico inicial",
     activity: "Confirmar alcance, version normativa, partes interesadas, procesos, sedes y nivel de madurez.",
-    owner: "Direccion / Responsable SG",
-    deliverable: "Ficha de diagnostico y alcance validado",
+    owner: "Dirección / Responsable SG",
+    deliverable: "Ficha de diagnóstico y alcance validado",
   },
   {
     phase: "2. Analisis de brechas",
@@ -72,7 +72,7 @@ const basePlan = [
   {
     phase: "3. Planeacion de transicion",
     activity: "Definir ruta, responsables, recursos, plazos, riesgos y criterios de cierre.",
-    owner: "Responsable SG / Alta Direccion",
+    owner: "Responsable SG / Alta Dirección",
     deliverable: "Plan de transicion aprobado",
   },
   {
@@ -102,13 +102,13 @@ const basePlan = [
   {
     phase: "8. Revision por la direccion",
     activity: "Evaluar desempeno, recursos, riesgos, oportunidades, cambios y decisiones.",
-    owner: "Alta Direccion",
+    owner: "Alta Dirección",
     deliverable: "Acta de revision y plan de mejora",
   },
   {
     phase: "9. Cierre y readiness",
     activity: "Verificar cierre de acciones, eficacia y preparacion para auditoria externa o mantenimiento.",
-    owner: "Responsable SG / Direccion",
+    owner: "Responsable SG / Dirección",
     deliverable: "Reporte de readiness assessment",
   },
 ];
@@ -222,7 +222,7 @@ function priorityValue(priority: DiagnosticGap["priority"]) {
 }
 
 function getAction(domain: string, score: number) {
-  if (score < 41) return `Ejecutar diagnostico profundo de ${domain.toLowerCase()}, definir responsable, evidencia minima y fecha de cierre inmediata.`;
+  if (score < 41) return `Ejecutar diagnóstico profundo de ${domain.toLowerCase()}, definir responsable, evidencia mínima y fecha de cierre inmediata.`;
   if (score < 61) return `Actualizar metodologia de ${domain.toLowerCase()}, documentar controles y programar verificacion en auditoria interna.`;
   if (score < 81) return `Validar evidencia de ${domain.toLowerCase()}, medir eficacia y cerrar acciones pendientes.`;
   return `Consolidar evidencia final de ${domain.toLowerCase()} y mantener monitoreo preventivo.`;
@@ -264,7 +264,7 @@ function getLeadScore(org: OrgData, score: number, gaps: DiagnosticGap[]) {
   leadScore += ["Certificacion", "Sistema integrado", "Seguimiento mensual"].includes(org.interest) ? 10 : 5;
   leadScore = Math.min(100, Math.round(leadScore));
 
-  const type = leadScore >= 85 ? "Estrategico" : leadScore >= 70 ? "Urgente" : leadScore >= 55 ? "Calificado" : leadScore >= 40 ? "Interesado" : "Frio";
+  const type = leadScore >= 85 ? "Estratégico" : leadScore >= 70 ? "Urgente" : leadScore >= 55 ? "Calificado" : leadScore >= 40 ? "Interesado" : "Frío";
   return { score: leadScore, type };
 }
 

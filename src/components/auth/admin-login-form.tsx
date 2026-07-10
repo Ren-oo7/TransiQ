@@ -16,7 +16,7 @@ export function AdminLoginForm({ demoMode }: AdminLoginFormProps) {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const nextPath = searchParams.get("next") || "/admin";
+  const nextPath = searchParams.get("next") || "/crm";
   const loggedOut = searchParams.get("loggedOut") === "1";
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -33,14 +33,14 @@ export function AdminLoginForm({ demoMode }: AdminLoginFormProps) {
 
       const data = await response.json();
       if (!response.ok) {
-        setError(data.error || "No fue posible iniciar sesion.");
+        setError(data.error || "No fue posible iniciar sesión.");
         return;
       }
 
       router.push(nextPath);
       router.refresh();
     } catch {
-      setError("Fallo la conexion con el login interno.");
+      setError("Falló la conexión con el login interno.");
     } finally {
       setIsSubmitting(false);
     }
@@ -50,13 +50,13 @@ export function AdminLoginForm({ demoMode }: AdminLoginFormProps) {
     <article className={`cardSurface ${styles.card}`}>
       <div className={styles.header}>
         <p className="eyebrow sectionEyebrow">CRM interno</p>
-        <h2>Ingreso para direccion y comercial</h2>
+        <h2>Ingreso para dirección y comercial</h2>
         <p>
           Este acceso protege la bandeja comercial y el seguimiento de leads del sitio.
         </p>
       </div>
 
-      {loggedOut ? <div className={styles.info}>La sesion se cerro correctamente.</div> : null}
+      {loggedOut ? <div className={styles.info}>La sesión se cerró correctamente.</div> : null}
       {error ? <div className={styles.error}>{error}</div> : null}
 
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -66,8 +66,8 @@ export function AdminLoginForm({ demoMode }: AdminLoginFormProps) {
         </label>
 
         <label className={styles.field}>
-          Contrasena
-          <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Tu contrasena" />
+          Contraseña
+          <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Tu contraseña" />
         </label>
 
         <button className="button buttonPrimary" type="submit" disabled={isSubmitting}>
@@ -76,7 +76,7 @@ export function AdminLoginForm({ demoMode }: AdminLoginFormProps) {
       </form>
 
       <div className={styles.helper}>
-        <p className="miniLabel">Configuracion de acceso</p>
+        <p className="miniLabel">Configuración de acceso</p>
         {demoMode ? (
           <>
             <ul className={styles.list}>
@@ -89,7 +89,7 @@ export function AdminLoginForm({ demoMode }: AdminLoginFormProps) {
           </>
         ) : (
           <p>
-            Este entorno usa credenciales definidas por variables de entorno. El acceso demo ya no esta habilitado aqui.
+            Este entorno usa credenciales definidas por variables de entorno. El acceso demo ya no está habilitado aquí.
           </p>
         )}
       </div>

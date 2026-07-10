@@ -1,5 +1,10 @@
-﻿import { PublicDiagnostic } from "@/components/diagnostic/public-diagnostic";
+﻿import { Suspense } from "react";
+import { PublicDiagnostic } from "@/components/diagnostic/public-diagnostic";
 
 export default function DiagnosticoPage() {
-  return <PublicDiagnostic />;
+  return (
+    <Suspense fallback={null}>
+      <PublicDiagnostic />
+    </Suspense>
+  );
 }

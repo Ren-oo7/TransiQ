@@ -1,0 +1,9 @@
+.fullBleed {
+  width: 100%;
+}
+
+@media (max-width: 760px) {
+  .fullBleed {
+    width: 100%;
+  }
+}

@@ -18,11 +18,11 @@ export type TransitionCard = {
 
 export const navItems = [
   { href: '/', label: 'Inicio' },
-  { href: '/diagnostico', label: 'Diagnostico' },
+  { href: '/diagnostico?canal=navegacion', label: 'Diagnóstico' },
   { href: '/soluciones', label: 'Soluciones' },
   { href: '/recursos', label: 'Recursos' },
-  { href: '/demo', label: 'Demo' },
-  { href: '/contacto', label: 'Contacto' },
+  { href: '/demo?canal=navegacion', label: 'Demo' },
+  { href: '/contacto?canal=navegacion', label: 'Contacto' },
 ];
 
 export const heroStandards = [
@@ -34,109 +34,109 @@ export const heroStandards = [
 ];
 
 export const heroMetrics = [
-  { label: 'Brechas criticas', value: '7' },
+  { label: 'Brechas críticas', value: '7' },
   { label: 'Acciones abiertas', value: '22' },
   { label: 'Evidencias pendientes', value: '38%' },
-  { label: 'Tiempo estimado', value: '120 dias' },
+  { label: 'Tiempo estimado', value: '120 días' },
 ];
 
 export const featureStats = [
-  'Diagnostico de madurez por norma, clausula y eje de gestion.',
+  'Diagnóstico de madurez por norma, cláusula y eje de gestión.',
   'Matriz de brechas con impacto, evidencia, prioridad y responsable.',
-  'Plan automatico de transicion, implementacion o fortalecimiento.',
+  'Plan automático de transición, implementación o fortalecimiento.',
   'Seguimiento ejecutivo con IA, evidencias, acciones e indicadores.',
 ];
 
 export const transitionCards: TransitionCard[] = [
   {
     code: 'ISO 9001:2015 -> ISO 9001:2026',
-    title: 'Calidad y desempeno organizacional',
-    status: 'FDIS / publicacion esperada 2026',
+    title: 'Calidad y desempeño organizacional',
+    status: 'FDIS / publicación esperada 2026',
     description:
-      'Ruta para evaluar enfoque al cliente, procesos, riesgos, liderazgo, desempeno, cultura de calidad, datos y mejora.',
-    bullets: ['Brechas por clausula', 'Plan de transicion', 'Indicadores y auditoria interna'],
+      'Ruta para evaluar enfoque al cliente, procesos, riesgos, liderazgo, desempeño, cultura de calidad, datos y mejora.',
+    bullets: ['Brechas por cláusula', 'Plan de transición', 'Indicadores y auditoría interna'],
   },
   {
     code: 'ISO 14001:2015 -> ISO 14001:2026',
-    title: 'Gestion ambiental y sostenibilidad',
-    status: 'Nueva edicion publicada',
+    title: 'Gestión ambiental y sostenibilidad',
+    status: 'Nueva edición publicada',
     description:
-      'Preparacion para fortalecer contexto ambiental, ciclo de vida, cumplimiento, riesgos climaticos, desempeno y evidencias.',
+      'Preparación para fortalecer contexto ambiental, ciclo de vida, cumplimiento, riesgos climáticos, desempeño y evidencias.',
     bullets: ['Aspectos e impactos', 'Cumplimiento legal', 'ESG y cambio climatico'],
   },
   {
-    code: 'ISO 45001:2018 -> futura edicion',
+    code: 'ISO 45001:2018 -> futura edición',
     title: 'Seguridad, salud y cultura preventiva',
-    status: 'En revision internacional',
+    status: 'En revisión internacional',
     description:
-      'Fortalecimiento de SST, participacion de trabajadores, contratistas, emergencias, incidentes y riesgos psicosociales.',
-    bullets: ['Peligros y riesgos', 'Consulta y participacion', 'Bienestar laboral'],
+      'Fortalecimiento de SST, participación de trabajadores, contratistas, emergencias, incidentes y riesgos psicosociales.',
+    bullets: ['Peligros y riesgos', 'Consulta y participación', 'Bienestar laboral'],
   },
   {
     code: 'ISO 37001:2016 -> ISO 37001:2025',
-    title: 'Antisoborno, etica y cumplimiento',
-    status: 'Actualizacion normativa',
+    title: 'Antisoborno, ética y cumplimiento',
+    status: 'Actualización normativa',
     description:
-      'Ruta para debida diligencia, controles financieros y no financieros, funcion de cumplimiento, terceros y canal de denuncias.',
+      'Ruta para debida diligencia, controles financieros y no financieros, función de cumplimiento, terceros y canal de denuncias.',
     bullets: ['Riesgos de soborno', 'Debida diligencia', 'Gobernanza y evidencia'],
   },
 ];
 
 export const platformModules = [
-  'Diagnostico de madurez',
+  'Diagnóstico de madurez',
   'Selector multinorma',
   'Matriz de brechas',
-  'Plan de transicion',
-  'Gestion documental',
+  'Plan de transición',
+  'Gestión documental',
   'Evidencias objetivas',
-  'Auditoria interna',
+  'Auditoría interna',
   'Acciones correctivas',
   'Riesgos y oportunidades',
   'Indicadores',
-  'Revision por direccion',
+  'Revisión por dirección',
   'Copiloto IA',
   'Dashboard cliente',
   'Dashboard comercial',
-  'Dashboard tecnico',
+  'Dashboard técnico',
   'Reportes PDF y Word',
 ];
 
 export const workflowSteps = [
   {
     code: '01',
-    title: 'Registro de organizacion',
-    description: 'Pais, sector, norma, alcance, empleados, sitios y urgencia.',
+    title: 'Registro de organización',
+    description: 'País, sector, norma, alcance, empleados, sitios y urgencia.',
   },
   {
     code: '02',
-    title: 'Diagnostico por norma',
-    description: 'Preguntas ponderadas por clausula, eje y criticidad.',
+    title: 'Diagnóstico por norma',
+    description: 'Preguntas ponderadas por cláusula, eje y criticidad.',
   },
   {
     code: '03',
     title: 'Resultado de madurez',
-    description: 'Semaforo, brechas, riesgos prioritarios y ruta sugerida.',
+    description: 'Semáforo, brechas, riesgos prioritarios y ruta sugerida.',
   },
   {
     code: '04',
-    title: 'Plan de accion',
+    title: 'Plan de acción',
     description: 'Fases, responsables, evidencias, fechas e indicadores.',
   },
   {
     code: '05',
     title: 'Seguimiento',
-    description: 'Dashboard, alertas, auditorias, acciones correctivas y reportes.',
+    description: 'Dashboard, alertas, auditorías, acciones correctivas y reportes.',
   },
 ];
 
 export const dashboardPanels = [
   {
     audience: 'Cliente',
-    title: 'Tablero del sistema de gestion',
+    title: 'Tablero del sistema de gestión',
     points: [
-      'Avance por norma y clausula.',
+      'Avance por norma y cláusula.',
       'Acciones vencidas y evidencias pendientes.',
-      'Riesgos criticos y proximos pasos.',
+      'Riesgos críticos y próximos pasos.',
       'Descarga de informes ejecutivos.',
     ],
   },
@@ -144,70 +144,70 @@ export const dashboardPanels = [
     audience: 'Comercial',
     title: 'Inteligencia de leads',
     points: [
-      'Leads por pais, norma, sector y urgencia.',
+      'Leads por país, norma, sector y urgencia.',
       'MQL, SQL, valor potencial y probabilidad.',
       'Servicios recomendados y ejecutivo asignado.',
-      'Exportacion a CRM y seguimiento automatico.',
+      'Exportación a CRM y seguimiento automático.',
     ],
   },
   {
-    audience: 'Tecnico',
+    audience: 'Técnico',
     title: 'Brechas recurrentes',
     points: [
       'Requisitos con menor madurez.',
       'Sectores con mayor riesgo.',
-      'Necesidades de capacitacion y auditoria.',
+      'Necesidades de capacitación y auditoría.',
       'Biblioteca de evidencias y plantillas.',
     ],
   },
 ];
 
 export const launchHooks = [
-  'Tu certificado esta vigente, pero tu sistema esta preparado?',
-  'No esperes a la auditoria para descubrir brechas.',
-  'La transicion no es documental: es estrategica.',
+  'Tu certificado está vigente, pero tu sistema está preparado?',
+  'No esperes a la auditoría para descubrir brechas.',
+  'La transición no es documental: es estratégica.',
   'Diagnostica antes de invertir tiempo y presupuesto.',
 ];
 
 export const launchFunnel = [
   'Contenido educativo y anuncios por norma.',
-  'Diagnostico gratuito con lead capture.',
+  'Diagnóstico gratuito con lead capture.',
   'Reporte ejecutivo y score comercial.',
-  'Webinar o sesion ejecutiva.',
+  'Webinar o sesión ejecutiva.',
   'Demo, propuesta o plan premium.',
 ];
 
 export const launchCalendar = [
-  { week: 'Semana 1', text: 'Landing principal, claim, diagnostico minimo viable y piezas teaser.' },
-  { week: 'Semana 2', text: 'Publicacion, CRM, formularios, email de seguimiento y campana organica.' },
-  { week: 'Semana 3', text: 'Google Ads, LinkedIn Ads, webinar y remarketing por norma y pais.' },
-  { week: 'Semana 4', text: 'Optimizacion de leads, demos, propuestas y tablero comercial.' },
+  { week: 'Semana 1', text: 'Landing principal, claim, diagnóstico mínimo viable y piezas teaser.' },
+  { week: 'Semana 2', text: 'Publicación, CRM, formularios, email de seguimiento y campaña orgánica.' },
+  { week: 'Semana 3', text: 'Google Ads, LinkedIn Ads, webinar y remarketing por norma y país.' },
+  { week: 'Semana 4', text: 'Optimización de leads, demos, propuestas y tablero comercial.' },
 ];
 
 export const architectureItems = [
   {
-    title: 'Frontend',
-    text: 'Sitio comercial en Next.js con paginas por norma, diagnostico, formularios y arquitectura modular para crecimiento.',
+    title: 'Diagnóstico Inteligente',
+    text: 'Evaluación multinorma automática por cláusula y eje de gestión, generando semáforos de madurez en tiempo real.',
   },
   {
-    title: 'Backend',
-    text: 'APIs para captacion, diagnostico, CRM interno, pipeline comercial y metricas operativas para direccion y ventas.',
+    title: 'Planificador de Acción',
+    text: 'Algoritmo dinámico que traza una ruta de implementación detallada con plazos, responsables y entregables.',
   },
   {
-    title: 'Base de datos',
-    text: 'Persistencia de leads, respuestas, clasificacion comercial, notas, etapas y origen de campana.',
+    title: 'Gestor de Evidencias',
+    text: 'Repositorio seguro para recolectar y almacenar evidencias objetivas trazables de cara a auditorías de certificación.',
   },
   {
-    title: 'Integraciones',
-    text: 'Email interno, analytics, remarketing, agenda de demo y posible integracion futura con herramientas comerciales.',
+    title: 'Auditoría y Desempeño',
+    text: 'Herramientas para planificar auditorías internas, registrar no conformidades, realizar análisis de causa raíz y KPIs.',
   },
   {
-    title: 'Seguridad',
-    text: 'Roles para direccion y comercial, control de acceso a admin, trazabilidad y proteccion de datos captados.',
+    title: 'Seguridad y Trazabilidad',
+    text: 'Control de accesos estructurado, firmas digitales, perfiles por rol y trazabilidad completa de cambios en el SG.',
   },
   {
-    title: 'IA y evolucion',
-    text: 'La experiencia comercial puede crecer hacia recomendaciones, seguimiento y automatizaciones sin reescribir el sitio.',
+    title: 'Copiloto de IA',
+    text: 'Asistencia inteligente para interpretar requisitos normativos complejos y sugerir acciones correctivas eficaces.',
   },
 ];
 
@@ -215,68 +215,68 @@ export const solutions: Solution[] = [
   {
     slug: 'iso-9001',
     label: 'ISO 9001:2026',
-    summary: 'Prepara la transicion de calidad con diagnostico, brechas y ruta ejecutiva antes de llegar a auditoria.',
-    audience: 'Direccion general, calidad, operaciones y responsables de mejora.',
-    challenge: 'Muchas organizaciones mantienen certificado vigente, pero no saben si su sistema realmente esta listo para la nueva generacion ISO.',
-    value: ['Diagnostico ejecutivo de madurez', 'Priorizacion de brechas por impacto', 'Ruta sugerida para demo y acompanamiento comercial'],
-    offer: ['Landing orientada a campana', 'Diagnostico guiado', 'Seguimiento comercial hacia demo TransiQ'],
+    summary: 'Prepara la transición de calidad con diagnóstico, brechas y ruta ejecutiva antes de llegar a auditoría.',
+    audience: 'Dirección general, calidad, operaciones y responsables de mejora.',
+    challenge: 'Muchas organizaciones mantienen certificado vigente, pero no saben si su sistema realmente está listo para la nueva generación ISO.',
+    value: ['Diagnóstico ejecutivo de madurez', 'Priorización de brechas por impacto', 'Ruta sugerida para demo y acompañamiento comercial'],
+    offer: ['Landing orientada a campaña', 'Diagnóstico guiado', 'Seguimiento comercial hacia demo TransiQ'],
   },
   {
     slug: 'iso-14001',
     label: 'ISO 14001:2026',
-    summary: 'Convierte los cambios ambientales en una ruta clara de preparacion, evidencia y decision.',
+    summary: 'Convierte los cambios ambientales en una ruta clara de preparación, evidencia y decisión.',
     audience: 'Gerentes ambientales, HSE, cumplimiento y operaciones.',
-    challenge: 'El reto no es solo actualizar documentos; es demostrar control ambiental, riesgos y evidencia de desempeno.',
-    value: ['Narrativa comercial por norma', 'Diagnostico de preparacion ambiental', 'Embudo de conversion a demo tecnica'],
+    challenge: 'El reto no es solo actualizar documentos; es demostrar control ambiental, riesgos y evidencia de desempeño.',
+    value: ['Narrativa comercial por norma', 'Diagnóstico de preparación ambiental', 'Embudo de conversión a demo técnica'],
     offer: ['Pagina por norma con SEO', 'Captura de leads por urgencia', 'Pipeline comercial para seguimiento'],
   },
   {
     slug: 'iso-45001',
     label: 'ISO 45001',
-    summary: 'Posiciona la preparacion SST como proyecto estrategico, no solo documental.',
+    summary: 'Posiciona la preparación SST como proyecto estratégico, no solo documental.',
     audience: 'Responsables de SST, HSE, operaciones y recursos humanos.',
-    challenge: 'Las empresas necesitan evaluar participacion, riesgos, cumplimiento y cultura preventiva antes de cualquier transicion.',
-    value: ['Contenido comercial especializado', 'Diagnostico publico de enganche', 'Lead scoring para priorizar oportunidades'],
-    offer: ['Mensajes por sector', 'CTA a sesion ejecutiva', 'Entrega de lead calificado a comercial'],
+    challenge: 'Las empresas necesitan evaluar participación, riesgos, cumplimiento y cultura preventiva antes de cualquier transición.',
+    value: ['Contenido comercial especializado', 'Diagnóstico público de enganche', 'Lead scoring para priorizar oportunidades'],
+    offer: ['Mensajes por sector', 'CTA a sesión ejecutiva', 'Entrega de lead calificado a comercial'],
   },
   {
     slug: 'iso-37001',
     label: 'ISO 37001:2025',
-    summary: 'Impulsa servicios de antisoborno con una propuesta clara de diagnostico, control y gobernanza.',
-    audience: 'Cumplimiento, legal, auditoria y direccion.',
-    challenge: 'Los equipos necesitan identificar brechas de gobernanza y debida diligencia sin mezclar certificacion con asesoria impropia.',
-    value: ['Mensajes alineados a imparcialidad', 'Ruta de evaluacion preliminar', 'Preparacion para seguimiento comercial serio'],
-    offer: ['Landing especializada', 'Diagnostico ejecutivo', 'Canal de paso a demo o contacto'],
+    summary: 'Impulsa servicios de antisoborno con una propuesta clara de diagnóstico, control y gobernanza.',
+    audience: 'Cumplimiento, legal, auditoría y dirección.',
+    challenge: 'Los equipos necesitan identificar brechas de gobernanza y debida diligencia sin mezclar certificación con asesoría impropia.',
+    value: ['Mensajes alineados a imparcialidad', 'Ruta de evaluación preliminar', 'Preparación para seguimiento comercial serio'],
+    offer: ['Landing especializada', 'Diagnóstico ejecutivo', 'Canal de paso a demo o contacto'],
   },
   {
     slug: 'sistema-integrado',
     label: 'Sistema Integrado',
-    summary: 'Explica y vende la integracion de calidad, ambiente y SST con una experiencia comercial unificada.',
-    audience: 'Empresas multisede, multinorma y equipos de direccion.',
-    challenge: 'El valor real esta en ordenar prioridades, no en presentar normas aisladas.',
-    value: ['Diagnostico de enfoque integrado', 'Mensajes para alta direccion', 'Seguimiento comercial con mayor contexto'],
-    offer: ['Pagina de integracion', 'Captura de leads premium', 'Ruta de conversacion hacia demo TransiQ'],
+    summary: 'Explica y vende la integración de calidad, ambiente y SST con una experiencia comercial unificada.',
+    audience: 'Empresas multisede, multinorma y equipos de dirección.',
+    challenge: 'El valor real está en ordenar prioridades, no en presentar normas aisladas.',
+    value: ['Diagnóstico de enfoque integrado', 'Mensajes para alta dirección', 'Seguimiento comercial con mayor contexto'],
+    offer: ['Página de integración', 'Captura de leads premium', 'Ruta de conversación hacia demo TransiQ'],
   },
 ];
 
 export const resources = [
   {
-    title: 'Checklist de transicion ISO 2026',
-    description: 'Lead magnet para captar organizaciones que ya saben que necesitan prepararse pero aun no inician.',
+    title: 'Checklist de transición ISO 2026',
+    description: 'Lead magnet para captar organizaciones que ya saben que necesitan prepararse pero aún no inician.',
   },
   {
-    title: 'Guia ejecutiva para alta direccion',
-    description: 'Material de apoyo para explicar riesgos, impacto y urgencia de la transicion normativa.',
+    title: 'Guía ejecutiva para alta dirección',
+    description: 'Material de apoyo para explicar riesgos, impacto y urgencia de la transición normativa.',
   },
   {
-    title: 'Webinar de preparacion por norma',
-    description: 'Pieza de campana complementaria para impulsar registro, asistencia y seguimiento comercial.',
+    title: 'Webinar de preparación por norma',
+    description: 'Pieza de campaña complementaria para impulsar registro, asistencia y seguimiento comercial.',
   },
 ];
 
 export const metrics = [
-  { value: '8% - 15%', label: 'Conversion esperada de landing' },
+  { value: '8% - 15%', label: 'Conversión esperada de landing' },
   { value: '30% - 50%', label: 'Paso estimado de MQL a SQL' },
-  { value: '4 rutas', label: 'Prioridades iniciales por norma y solucion' },
-  { value: '1 CRM', label: 'Canal interno para direccion y comercial' },
+  { value: '4 rutas', label: 'Prioridades iniciales por norma y solución' },
+  { value: '1 CRM', label: 'Canal interno para dirección y comercial' },
 ];

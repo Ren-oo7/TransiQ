@@ -1,0 +1,48 @@
+{
+  "org": {
+    "company": "Enertek Services",
+    "country": "Perú",
+    "sector": "Servicios industriales",
+    "employees": "260",
+    "sites": "6",
+    "standard": "ohsms",
+    "urgency": "media",
+    "interest": "Diagnóstico",
+    "scope": "Mejorar visibilidad ejecutiva del sistema SST y control de acciones entre sedes.",
+    "contact": "paola.silva@enertek.pe"
+  },
+  "answers": ["b", "b", "a", "b", "b", "a", "b", "a", "b", "a"],
+  "state": {
+    "standard": { "label": "ISO 45001: Seguridad y Salud en el Trabajo", "short": "ISO 45001" },
+    "score": 73,
+    "level": { "title": "Base sólida", "tone": "success" },
+    "lead": { "score": 69, "type": "Oportunidad en desarrollo" },
+    "duration": "90 días estimados",
+    "answered": 10,
+    "total": 10,
+    "recommendation": [
+      "Realizar demo enfocada en visibilidad directiva y seguimiento multisede.",
+      "Explorar tableros de incidentes, hallazgos y acciones correctivas.",
+      "Confirmar si quieren piloto con una sede antes del despliegue completo.",
+      "Armar propuesta modular para expansión progresiva."
+    ],
+    "domainScores": [
+      { "domain": "Participación y liderazgo", "score": 61 },
+      { "domain": "Controles operacionales", "score": 70 },
+      { "domain": "Seguimiento", "score": 74 },
+      { "domain": "Mejora continua", "score": 79 }
+    ],
+    "gaps": [
+      {
+        "domain": "Participación y liderazgo",
+        "gap": "La visión directiva y el seguimiento entre sedes no es homogéneo.",
+        "impact": "Se diluye la priorización de acciones estratégicas.",
+        "priority": "Media",
+        "action": "Instalar tablero ejecutivo compartido con indicadores y responsables.",
+        "evidence": "KPIs, revisiones gerenciales y planes de acción."
+      }
+    ]
+  },
+  "source": "Diagnóstico público | Navegación orgánica | ISO 45001",
+  "notes": "Posible oportunidad para piloto; les interesa ver tableros y seguimiento de acciones."
+}

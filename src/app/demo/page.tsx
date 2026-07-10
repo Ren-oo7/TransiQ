@@ -1,23 +1,33 @@
+import { Suspense } from "react";
+import { InteractiveForm } from "@/components/shared/interactive-form";
+import styles from "@/styles/form-page.module.css";
+
 export default function DemoPage() {
   return (
-    <main className="section">
-      <div className="shell narrow-layout">
-        <p className="eyebrow">Conversion comercial</p>
-        <h1>La demo es el puente entre captacion y cierre.</h1>
-        <p className="lead-copy">
-          Esta pagina presentara la sesion ejecutiva como siguiente paso natural
-          despues del diagnostico. Aqui se concentraran agenda, formulario y
-          narrativa de valor para direccion y comercial.
-        </p>
-        <article className="panel">
-          <h2>Objetivo de esta pagina</h2>
-          <ul className="stack-list">
-            <li>Recibir leads calificados desde el diagnostico.</li>
-            <li>Solicitar demo o sesion ejecutiva.</li>
-            <li>Dar contexto previo al equipo comercial.</li>
-          </ul>
-        </article>
-      </div>
+    <main>
+      <section className={styles.hero}>
+        <div className={styles.heroCopy}>
+          <p className="eyebrow" style={{ color: "var(--color-accent-soft)" }}>Demostración en Vivo</p>
+          <h1>Agenda una sesión ejecutiva de TransiQ</h1>
+          <p>
+            Descubre en vivo cómo TransiQ automatiza tu transición ISO, mapea brechas, gestiona evidencias y te prepara para la auditoría mediante inteligencia artificial.
+          </p>
+        </div>
+      </section>
+
+      <section className={styles.formSection}>
+        <div className="shell">
+          <div className={styles.formContainer}>
+            <Suspense fallback={
+              <div className="cardSurface" style={{ padding: 40, display: "grid", placeItems: "center" }}>
+                <p className="eyebrow">Cargando formulario...</p>
+              </div>
+            }>
+              <InteractiveForm source="Solicitud de demo" defaultInterest="Diagnóstico" />
+            </Suspense>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

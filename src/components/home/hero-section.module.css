@@ -1,12 +1,28 @@
 .section {
   position: relative;
+  overflow: hidden;
   min-height: 730px;
   padding-top: 68px;
+  padding-bottom: 96px;
   background:
     radial-gradient(circle at 8% 10%, rgba(84, 226, 203, 0.22), transparent 28%),
     radial-gradient(circle at 88% 18%, rgba(12, 134, 199, 0.24), transparent 34%),
     linear-gradient(135deg, #061427 0%, #08213e 45%, #0a314e 100%);
   color: var(--color-text-inverse);
+}
+
+.heroBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.08;
+  filter: grayscale(100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .grid {
@@ -23,9 +39,9 @@
 .title {
   max-width: 860px;
   margin: 0 0 22px;
-  font-size: clamp(2.55rem, 5.2vw, 5.75rem);
-  line-height: 0.96;
-  letter-spacing: -0.072em;
+  font-size: clamp(2.2rem, 3.8vw, 3.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
 }
 
 .lead {
@@ -60,11 +76,11 @@
 }
 
 .dashboard {
-  width: min(100%, 470px);
-  padding: 26px;
+  width: min(100%, 410px);
+  padding: 20px;
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 32px;
+  border-radius: 28px;
   box-shadow: var(--shadow-strong);
   backdrop-filter: blur(20px);
 }
@@ -72,37 +88,38 @@
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   align-items: flex-start;
 }
 
 .dashboardHeader strong {
   display: block;
-  font-size: 3.5rem;
+  font-size: 2.8rem;
   line-height: 1;
   letter-spacing: -0.05em;
 }
 
 .dashboardLabel {
   color: var(--color-accent-soft);
+  font-size: 0.82rem;
 }
 
 .radarCard {
-  margin-top: 22px;
-  padding: 18px;
+  margin-top: 14px;
+  padding: 12px 14px;
   display: grid;
-  grid-template-columns: 132px 1fr;
-  gap: 18px;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
   align-items: center;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
+  border-radius: 20px;
 }
 
 .scoreRing {
   --score: 64;
-  width: 116px;
-  height: 116px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -111,15 +128,15 @@
 }
 
 .scoreRing span {
-  width: 82px;
-  height: 82px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: rgba(6, 20, 39, 0.92);
   color: white;
   font-weight: 900;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .radarCopy p {
@@ -128,19 +145,20 @@
 }
 
 .metricList {
-  margin-top: 18px;
+  margin-top: 12px;
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .metricRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 13px 14px;
-  border-radius: 16px;
+  padding: 9px 12px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.82);
+  font-size: 0.86rem;
 }
 
 .metricRow b {
@@ -148,11 +166,12 @@
 }
 
 .aiCard {
-  margin-top: 18px;
-  padding: 18px;
-  border-radius: 22px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
   background: linear-gradient(135deg, rgba(84, 226, 203, 0.22), rgba(12, 134, 199, 0.14));
   border: 1px solid rgba(84, 226, 203, 0.24);
+  font-size: 0.86rem;
 }
 
 .aiCard span {
@@ -161,8 +180,9 @@
 }
 
 .aiCard p {
-  margin-top: 8px;
+  margin-top: 6px;
   color: rgba(255, 255, 255, 0.86);
+  line-height: 1.4;
 }
 
 @media (max-width: 980px) {

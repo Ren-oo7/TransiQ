@@ -1,0 +1,56 @@
+{
+  "org": {
+    "company": "Nova Foods México",
+    "country": "México",
+    "sector": "Alimentos",
+    "employees": "95",
+    "sites": "2",
+    "standard": "fsms",
+    "urgency": "critica",
+    "interest": "Propuesta económica",
+    "scope": "Ordenar plan de transición, evidencias y seguimiento de acciones para inocuidad.",
+    "contact": "marco.ruiz@novafoods.mx"
+  },
+  "answers": ["c", "c", "b", "c", "c", "b", "c", "c", "b", "c"],
+  "state": {
+    "standard": { "label": "ISO 22000: Sistema de Gestión de Inocuidad Alimentaria", "short": "ISO 22000" },
+    "score": 41,
+    "level": { "title": "Riesgo alto", "tone": "danger" },
+    "lead": { "score": 88, "type": "Cuenta caliente" },
+    "duration": "45 días estimados",
+    "answered": 10,
+    "total": 10,
+    "recommendation": [
+      "Llevar una llamada de diagnóstico ejecutivo en menos de 48 horas.",
+      "Presentar ruta intensiva para control de acciones y evidencias.",
+      "Enseñar tablero de cumplimiento, responsables y alertas.",
+      "Emitir propuesta con acompañamiento cercano y plan de arranque."
+    ],
+    "domainScores": [
+      { "domain": "Riesgos e inocuidad", "score": 32 },
+      { "domain": "Documentación", "score": 38 },
+      { "domain": "Seguimiento", "score": 44 },
+      { "domain": "Competencia y capacitación", "score": 50 }
+    ],
+    "gaps": [
+      {
+        "domain": "Riesgos e inocuidad",
+        "gap": "No existe un control consistente de riesgos críticos y acciones.",
+        "impact": "Riesgo alto frente a auditoría y operación diaria.",
+        "priority": "Critica",
+        "action": "Montar seguimiento centralizado de riesgos, acciones y vencimientos.",
+        "evidence": "Matriz HACCP, controles y acciones correctivas."
+      },
+      {
+        "domain": "Documentación",
+        "gap": "La evidencia se encuentra dispersa entre áreas y sedes.",
+        "impact": "Hace lenta la preparación para auditoría.",
+        "priority": "Alta",
+        "action": "Concentrar evidencias y responsables en una sola operación digital.",
+        "evidence": "Procedimientos, registros y expedientes por proceso."
+      }
+    ]
+  },
+  "source": "Diagnóstico público | Referido consultor | ISO 22000",
+  "notes": "Buscan propuesta esta semana; presión por visita próxima del organismo certificador."
+}

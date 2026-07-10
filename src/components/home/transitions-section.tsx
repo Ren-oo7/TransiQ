@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { transitionCards } from "@/data/site-content";
+import { buildAttributedHref } from "@/lib/lead-attribution";
 import styles from "./transitions-section.module.css";
 
 export function TransitionsSection() {
@@ -7,12 +8,12 @@ export function TransitionsSection() {
     <section className="section">
       <div className="shell">
         <div className="sectionHeading">
-          <p className="eyebrow sectionEyebrow">Oportunidad normativa</p>
-          <h2>La transicion ISO no se improvisa. Se diagnostica, se planifica y se ejecuta.</h2>
+          <p className="eyebrow sectionEyebrow">Anticipación Normativa</p>
+          <h2>La transición ISO no se improvisa. Se diagnostica, se planifica y se ejecuta.</h2>
           <p>
-            El sitio principal debe abrir con esta narrativa: las organizaciones
-            certificadas necesitan anticipar brechas, actualizar sistemas y
-            demostrar eficacia con evidencia, no solo cambiar documentos.
+            El camino hacia la conformidad no consiste en acumular carpetas de documentos. Las organizaciones excelentes
+            anticipan los cambios normativos, evalúan sus brechas de forma continua y demuestran la eficacia de su sistema
+            con evidencias objetivas y digitales.
           </p>
         </div>
 
@@ -36,16 +37,15 @@ export function TransitionsSection() {
 
         <div className={`cardSurface ${styles.notice}`}>
           <div>
-            <strong>Mensaje recomendado para landing principal</strong>
+            <strong>Obtén tu Reporte de Brechas preliminar sin costo</strong>
             <p>
-              Evalua hoy tu nivel de preparacion para la nueva generacion ISO.
-              TransiQ identifica brechas, prioriza acciones y construye una ruta
-              clara para actualizar, implementar y administrar tu sistema de
-              gestion con asistencia digital.
+              Evalúa hoy el nivel de preparación de tu sistema frente a las normas ISO de nueva generación.
+              TransiQ analiza tus debilidades por proceso, te proporciona un plan de acción sugerido a 12 meses
+              y te prepara para el éxito de cara a tu próxima auditoría.
             </p>
           </div>
-          <Link className="button buttonPrimary" href="/diagnostico">
-            Evaluar ahora
+          <Link className="button buttonPrimary" href={buildAttributedHref("/diagnostico", { canal: "bloque-transicion" })}>
+            Iniciar diagnóstico gratis
           </Link>
         </div>
       </div>

@@ -1,4 +1,4 @@
-﻿import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import {
   authCookieName,
   canCloseLeads,
@@ -6,7 +6,7 @@ import {
   canManageOwners,
   readSessionToken,
 } from "@/lib/admin-auth";
-import { pipelineStages } from "@/lib/lead-types";
+import { leadPriorities, pipelineStages } from "@/lib/lead-types";
 import { createLead, getLeads, updateLead } from "@/lib/lead-store";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +36,8 @@ export async function POST(request: Request) {
     const org = body?.org;
     const answers = Array.isArray(body?.answers) ? body.answers : [];
     const state = body?.state;
+    const source = body?.source;
+    const notes = typeof body?.notes === "string" ? body.notes : undefined;
 
     if (!org?.company || !org?.contact) {
       return NextResponse.json(
@@ -46,12 +48,12 @@ export async function POST(request: Request) {
 
     if (!state || typeof state.score !== "number") {
       return NextResponse.json(
-        { error: "No se recibio un diagnostico valido." },
+        { error: "No se recibió un diagnóstico válido." },
         { status: 400 },
       );
     }
 
-    const lead = await createLead({ org, answers, state });
+    const lead = await createLead({ org, answers, state, source, notes });
     return NextResponse.json({ lead }, { status: 201 });
   } catch {
     return NextResponse.json(
@@ -71,8 +73,11 @@ export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
     const status = body?.status;
+    const priority = body?.priority;
     const owner = body?.owner;
     const notes = body?.notes;
+    const nextFollowUpAt = body?.nextFollowUpAt;
+    const lossReason = body?.lossReason;
 
     if (!body?.id || typeof body.id !== "string") {
       return NextResponse.json({ error: "Falta el id del lead." }, { status: 400 });
@@ -82,19 +87,34 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "La etapa seleccionada no es valida." }, { status: 400 });
     }
 
+    if (priority && !leadPriorities.includes(priority)) {
+      return NextResponse.json({ error: "La prioridad seleccionada no es válida." }, { status: 400 });
+    }
+
+    if (typeof nextFollowUpAt === "string" && nextFollowUpAt && !/^\d{4}-\d{2}-\d{2}$/.test(nextFollowUpAt)) {
+      return NextResponse.json({ error: "La fecha de seguimiento no tiene un formato válido." }, { status: 400 });
+    }
+
     if (status === "Cerrado" && !canCloseLeads(session.role)) {
-      return forbiddenResponse("Solo Direccion puede cerrar oportunidades.");
+      return forbiddenResponse("Solo Dirección puede cerrar oportunidades.");
     }
 
     if (typeof owner === "string" && owner.trim() && !canManageOwners(session.role)) {
-      return forbiddenResponse("Solo Direccion puede reasignar responsables.");
+      return forbiddenResponse("Solo Dirección puede reasignar responsables.");
     }
 
     const lead = await updateLead({
       id: body.id,
       status,
+      priority,
       owner: canManageOwners(session.role) ? owner : undefined,
       notes,
+      nextFollowUpAt,
+      lossReason,
+      actor: {
+        name: session.name,
+        role: session.role,
+      },
     });
 
     if (!lead) {

@@ -1,0 +1,240 @@
+.wrapper {
+  display: grid;
+  gap: 24px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr);
+  gap: 18px;
+}
+
+.heroCard,
+.highlightCard,
+.metricCard,
+.panelCard {
+  padding: 24px;
+}
+
+.heroCard,
+.highlightCard,
+.metricCard,
+.panelCard {
+  display: grid;
+  gap: 12px;
+}
+
+.heroCard h1,
+.sectionHeader h2 {
+  margin: 0;
+}
+
+.heroCard p,
+.highlightCard p,
+.metricCard p,
+.timelineItem p,
+.timelineItem small,
+.overdueList li span,
+.overdueList li small,
+.emptyText,
+.callout p {
+  color: var(--color-muted);
+}
+
+.heroCard p,
+.highlightCard p,
+.metricCard p,
+.timelineItem p,
+.overdueList li small,
+.emptyText,
+.callout p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.heroCard h1 {
+  font-size: clamp(2rem, 3.6vw, 3.5rem);
+  letter-spacing: -0.05em;
+}
+
+.chips,
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip,
+.kindBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.chip {
+  border: 1px solid rgba(12, 134, 199, 0.14);
+  background: rgba(12, 134, 199, 0.08);
+  color: #0b4f79;
+}
+
+.highlightCard {
+  align-content: start;
+  background: linear-gradient(180deg, #0b4f79, #08213e);
+  color: var(--color-text-inverse);
+}
+
+.highlightCard p,
+.highlightMeta,
+.highlightLabel {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.highlightLabel {
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.highlightValue,
+.metricValue {
+  font-size: clamp(2.3rem, 4vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.metricGrid,
+.dualGrid {
+  display: grid;
+  gap: 18px;
+}
+
+.metricGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dualGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.timeline,
+.overdueList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.timelineItem,
+.overdueList li,
+.callout {
+  padding: 16px;
+  border-radius: 16px;
+  background: #f6fafd;
+}
+
+.timelineItem {
+  display: grid;
+  gap: 8px;
+}
+
+.timelineTop,
+.overdueList li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.overdueList li div {
+  display: grid;
+  gap: 4px;
+}
+
+.metaRow {
+  font-size: 0.88rem;
+}
+
+.kindCreated {
+  background: rgba(20, 122, 83, 0.12);
+  color: var(--color-success);
+}
+
+.kindStage {
+  background: rgba(12, 134, 199, 0.12);
+  color: #0b4f79;
+}
+
+.kindOwner {
+  background: rgba(183, 121, 31, 0.12);
+  color: var(--color-warning);
+}
+
+.kindNotes {
+  background: rgba(15, 159, 144, 0.12);
+  color: var(--color-accent);
+}
+
+.kindPriority {
+  background: rgba(180, 35, 24, 0.12);
+  color: var(--color-danger);
+}
+
+.kindFollowUp {
+  background: rgba(93, 74, 217, 0.12);
+  color: #5d4ad9;
+}
+
+.kindLoss {
+  background: rgba(95, 105, 118, 0.14);
+  color: #44505d;
+}
+
+.callout {
+  display: grid;
+  gap: 6px;
+}
+
+@media (max-width: 1180px) {
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  .hero,
+  .metricGrid,
+  .dualGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeader,
+  .timelineTop,
+  .overdueList li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .heroCard,
+  .highlightCard,
+  .metricCard,
+  .panelCard {
+    padding: 20px;
+  }
+}

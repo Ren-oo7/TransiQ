@@ -6,11 +6,11 @@ export function DashboardSection() {
     <section className="section">
       <div className="shell">
         <div className="sectionHeading">
-          <p className="eyebrow sectionEyebrow">Dashboards de operacion</p>
-          <h2>Disenado para clientes, equipo comercial y especialistas tecnicos.</h2>
+          <p className="eyebrow sectionEyebrow">Dashboards de operación</p>
+          <h2>Diseñado para clientes, equipo comercial y especialistas técnicos.</h2>
           <p>
-            La aplicacion debe generar valor para la organizacion evaluada y, al
-            mismo tiempo, alimentar inteligencia comercial para EQA Group.
+            La aplicación debe generar valor para la organización evaluada y, al
+            mismo tiempo, alimentar inteligencia comercial para optimizar la gestión comercial.
           </p>
         </div>
 

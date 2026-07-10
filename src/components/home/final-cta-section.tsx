@@ -1,29 +1,30 @@
 import Link from "next/link";
+import { buildAttributedHref } from "@/lib/lead-attribution";
 import styles from "./final-cta-section.module.css";
 
 export function FinalCtaSection() {
   return (
     <section className={`${styles.section} section`}>
+      <div className={styles.heroBg} style={{ backgroundImage: "url('/imagenes/Genericas/eqa (4).webp')" }} />
       <div className={`shell ${styles.content}`}>
-        <p className="eyebrow">Lanzamiento comercial</p>
-        <h2>Activa TransiQ como motor de captacion, diagnostico y conversion de oportunidades ISO.</h2>
+        <p className="eyebrow">Transición Inteligente</p>
+        <h2>Empieza a digitalizar tu Sistema de Gestión ISO hoy</h2>
         <p className={styles.lead}>
-          Recomendacion: publicar primero la landing principal con diagnostico
-          gratuito, campana de ISO 14001:2026 e ISO 9001:2026, y despues escalar
-          a modulos de seguimiento, formularios persistentes y CRM interno.
+          TransiQ te ayuda a diagnosticar de forma inteligente, mapear brechas críticas
+          y automatizar tus evidencias para asegurar el éxito en tu próxima auditoría de certificación.
         </p>
         <div className={styles.actions}>
-          <Link className="button buttonLight" href="/demo">
+          <Link className="button buttonLight" href={buildAttributedHref("/demo", { canal: "cta-final" })}>
             Solicitar demo ejecutiva
           </Link>
-          <Link className="button buttonSecondary" href="/contacto">
+          <Link className="button buttonSecondary" href={buildAttributedHref("/contacto", { canal: "cta-final" })}>
             Hablar con comercial
           </Link>
         </div>
         <p className={styles.disclaimer}>
-          El diagnostico tiene fines de orientacion, preparacion y mejora. No
-          sustituye auditoria de certificacion, no representa decision de
-          certificacion y no garantiza obtencion, mantenimiento o renovacion de
+          El diagnóstico tiene fines de orientación, preparación y mejora. No
+          sustituye auditoría de certificación, no representa decisión de
+          certificación y no garantiza obtención, mantenimiento o renovación de
           certificado.
         </p>
       </div>

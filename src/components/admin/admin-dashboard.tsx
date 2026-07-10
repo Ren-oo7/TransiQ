@@ -1,14 +1,16 @@
-﻿"use client";
+"use client";
 
-import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import type { AdminSession } from "@/lib/admin-auth-types";
-import { pipelineStages, type LeadStage, type SavedLead } from "@/lib/lead-types";
+import { formatLeadPriority, formatLeadStage, pipelineStages, type LeadStage, type SavedLead } from "@/lib/lead-types";
+import type { CrmUser } from "@/lib/team-store";
 import styles from "./admin-dashboard.module.css";
 
 type AdminDashboardProps = {
   leads: SavedLead[];
   session: AdminSession;
+  users: CrmUser[];
 };
 
 function getScoreClass(score: number) {
@@ -24,25 +26,55 @@ function getStageClass(stage: LeadStage) {
   return styles.stageNew;
 }
 
-export function AdminDashboard({ leads: initialLeads, session }: AdminDashboardProps) {
-  const router = useRouter();
-  const [leads, setLeads] = useState(initialLeads);
-  const [selectedId, setSelectedId] = useState(initialLeads[0]?.id ?? "");
-  const [draftOwner, setDraftOwner] = useState(initialLeads[0]?.owner ?? "Sin asignar");
-  const [draftNotes, setDraftNotes] = useState(initialLeads[0]?.notes ?? "");
-  const [toast, setToast] = useState("");
-  const [isPending, startTransition] = useTransition();
-  const [isLoggingOut, startLogoutTransition] = useTransition();
+function normalizeText(value: string) {
+  return value.trim().toLowerCase();
+}
 
-  const canManageOwners = session.role === "Director";
-  const allowedStages = session.role === "Director"
-    ? pipelineStages
-    : pipelineStages.filter((stage) => stage !== "Cerrado");
-
-  const selectedLead = useMemo(
-    () => leads.find((lead) => lead.id === selectedId) ?? leads[0] ?? null,
-    [leads, selectedId],
+export function AdminDashboard({ leads, session, users }: AdminDashboardProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [stageFilter, setStageFilter] = useState("Todos");
+  const [urgencyFilter, setUrgencyFilter] = useState("Todas");
+  const [standardFilter, setStandardFilter] = useState("Todas");
+  const [ownerFilter, setOwnerFilter] = useState("Todos");
+  const [pageSize, setPageSize] = useState("10");
+  const [currentPage, setCurrentPage] = useState(1);
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+  const ownerOptions = useMemo(
+    () => ["Sin asignar", ...users.map((user) => user.name)],
+    [users],
   );
+
+  const standardOptions = useMemo(
+    () => Array.from(new Set(leads.map((lead) => lead.diagnostic.standardShort))).sort(),
+    [leads],
+  );
+
+  const filteredLeads = useMemo(() => {
+    const query = normalizeText(deferredSearchTerm);
+
+    return leads.filter((lead) => {
+      if (stageFilter !== "Todos" && lead.status !== stageFilter) return false;
+      if (urgencyFilter !== "Todas" && lead.org.urgency !== urgencyFilter) return false;
+      if (standardFilter !== "Todas" && lead.diagnostic.standardShort !== standardFilter) return false;
+      if (ownerFilter !== "Todos" && lead.owner !== ownerFilter) return false;
+      if (!query) return true;
+
+      const haystack = [
+        lead.org.company,
+        lead.org.contact,
+        lead.org.country,
+        lead.org.sector,
+        lead.owner,
+        lead.source,
+        lead.diagnostic.standardLabel,
+        lead.diagnostic.standardShort,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(query);
+    });
+  }, [deferredSearchTerm, leads, ownerFilter, stageFilter, standardFilter, urgencyFilter]);
 
   const strategicLeads = leads.filter((lead) => lead.diagnostic.lead.score >= 70).length;
   const urgentLeads = leads.filter((lead) => ["alta", "critica"].includes(lead.org.urgency)).length;
@@ -50,307 +82,272 @@ export function AdminDashboard({ leads: initialLeads, session }: AdminDashboardP
     ? Math.round(leads.reduce((sum, lead) => sum + lead.diagnostic.score, 0) / leads.length)
     : 0;
 
-  const pipelineCounts = useMemo(
-    () => pipelineStages.map((stage) => ({ stage, count: leads.filter((lead) => lead.status === stage).length })),
-    [leads],
-  );
+  const pageSizeNumber = Number(pageSize);
+  const totalPages = Math.max(1, Math.ceil(filteredLeads.length / pageSizeNumber));
+  const paginatedLeads = useMemo(() => {
+    const start = (currentPage - 1) * pageSizeNumber;
+    return filteredLeads.slice(start, start + pageSizeNumber);
+  }, [currentPage, filteredLeads, pageSizeNumber]);
 
-  function selectLead(id: string) {
-    const lead = leads.find((item) => item.id === id);
-    if (!lead) return;
-    setSelectedId(id);
-    setDraftOwner(lead.owner);
-    setDraftNotes(lead.notes);
-  }
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [deferredSearchTerm, stageFilter, urgencyFilter, standardFilter, ownerFilter, pageSize]);
 
-  function flashToast(message: string) {
-    setToast(message);
-    window.setTimeout(() => setToast(""), 2400);
-  }
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
-  async function saveLeadUpdate(nextStatus?: LeadStage) {
-    if (!selectedLead) return;
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
 
-    const payload = {
-      id: selectedLead.id,
-      status: nextStatus ?? selectedLead.status,
-      owner: canManageOwners ? draftOwner.trim() || "Sin asignar" : undefined,
-      notes: draftNotes,
-    };
-
-    startTransition(async () => {
-      try {
-        const response = await fetch("/api/leads", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-          flashToast(data.error || "No fue posible actualizar el lead");
-          return;
-        }
-
-        setLeads((current) => current.map((lead) => (lead.id === data.lead.id ? data.lead : lead)));
-        setSelectedId(data.lead.id);
-        setDraftOwner(data.lead.owner);
-        setDraftNotes(data.lead.notes);
-        flashToast("Lead actualizado en el pipeline");
-      } catch {
-        flashToast("Fallo la actualizacion del lead");
-      }
-    });
-  }
-
-  function logout() {
-    startLogoutTransition(async () => {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/login?loggedOut=1");
-      router.refresh();
-    });
+  function clearFilters() {
+    setSearchTerm("");
+    setStageFilter("Todos");
+    setUrgencyFilter("Todas");
+    setStandardFilter("Todas");
+    setOwnerFilter("Todos");
   }
 
   return (
-    <main className="section">
-      <div className={`shell ${styles.grid}`}>
-        <section className={styles.hero}>
-          <div className={styles.heroCopy}>
+    <main className={styles.grid}>
+      <section className={styles.hero}>
+        <div className={styles.heroCopy}>
+          <div>
+            <p className="eyebrow">CRM interno</p>
+            <h1>Bandeja comercial para leads captados desde el diagnóstico.</h1>
+          </div>
+          <p>
+            Aquí concentramos filtros, lectura rápida y priorización inicial. El seguimiento completo de cada oportunidad
+            ahora vive en una pantalla de detalle para no saturar la bandeja cuando el volumen crezca.
+          </p>
+        </div>
+
+        <article className={`cardSurface ${styles.heroStats}`}>
+          <div className={styles.sessionMeta}>
+            <span className={styles.sessionBadge}>{session.role}</span>
+          </div>
+          <span className="miniLabel">Sesión activa</span>
+          <b>{session.name}</b>
+          <p>{session.email}</p>
+        </article>
+      </section>
+
+      <section className={styles.metricGrid}>
+        <article className={`cardSurface ${styles.metricCard}`}>
+          <span className="miniLabel">Leads totales</span>
+          <b>{leads.length}</b>
+          <span>Registros acumulados desde el diagnóstico público</span>
+        </article>
+
+        <article className={`cardSurface ${styles.metricCard}`}>
+          <span className="miniLabel">Leads estratégicos</span>
+          <b>{strategicLeads}</b>
+          <span>Score comercial mayor o igual a 70</span>
+        </article>
+
+        <article className={`cardSurface ${styles.metricCard}`}>
+          <span className="miniLabel">Urgencia alta</span>
+          <b>{urgentLeads}</b>
+          <span>Casos marcados como alta o crítica</span>
+        </article>
+
+        <article className={`cardSurface ${styles.metricCard}`}>
+          <span className="miniLabel">Madurez promedio</span>
+          <b>{averageScore}%</b>
+          <span>Promedio del diagnóstico inicial recibido</span>
+        </article>
+      </section>
+
+      {leads.length ? (
+        <article className={`cardSurface ${styles.tableCard}`}>
+          <div className={styles.tableHeader}>
             <div>
-              <p className="eyebrow">CRM interno</p>
-              <h1>Pipeline comercial inicial para diagnosticos captados.</h1>
+              <p className="eyebrow sectionEyebrow">Bandeja comercial</p>
+              <h2>Leads captados</h2>
             </div>
-            <p>
-              Esta fase ya permite recibir leads, moverlos por etapa, asignar responsable y guardar notas internas para que
-              direccion y comercial trabajen sobre una misma lectura operativa.
-            </p>
+            <p>{filteredLeads.length} resultados visibles de {leads.length} registros</p>
           </div>
 
-          <article className={`cardSurface ${styles.heroStats}`}>
-            <div className={styles.sessionMeta}>
-              <span className={styles.sessionBadge}>{session.role}</span>
-              <button className="button buttonLight" type="button" onClick={logout} disabled={isLoggingOut}>
-                {isLoggingOut ? "Saliendo..." : "Cerrar sesion"}
-              </button>
-            </div>
-            <span className="miniLabel">Sesion activa</span>
-            <b>{session.name}</b>
-            <p>{session.email}</p>
-          </article>
-        </section>
+          <div className={styles.filters}>
+            <label className={styles.filterField}>
+              Buscar
+              <input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Empresa, contacto, norma, país, responsable..."
+              />
+            </label>
 
-        <section className={styles.metricGrid}>
-          <article className={`cardSurface ${styles.metricCard}`}>
-            <span className="miniLabel">Leads totales</span>
-            <b>{leads.length}</b>
-            <span>Registros acumulados desde el diagnostico publico</span>
-          </article>
+            <label className={styles.filterField}>
+              Etapa
+              <select value={stageFilter} onChange={(event) => setStageFilter(event.target.value)}>
+                <option value="Todos">Todas</option>
+                {pipelineStages.map((stage) => (
+                  <option key={stage} value={stage}>
+                    {formatLeadStage(stage)}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-          <article className={`cardSurface ${styles.metricCard}`}>
-            <span className="miniLabel">Leads estrategicos</span>
-            <b>{strategicLeads}</b>
-            <span>Score comercial mayor o igual a 70</span>
-          </article>
+            <label className={styles.filterField}>
+              Urgencia
+              <select value={urgencyFilter} onChange={(event) => setUrgencyFilter(event.target.value)}>
+                <option value="Todas">Todas</option>
+                <option value="baja">Baja</option>
+                <option value="media">Media</option>
+                <option value="alta">Alta</option>
+                <option value="critica">Crítica</option>
+              </select>
+            </label>
 
-          <article className={`cardSurface ${styles.metricCard}`}>
-            <span className="miniLabel">Urgencia alta</span>
-            <b>{urgentLeads}</b>
-            <span>Casos marcados como alta o critica</span>
-          </article>
+            <label className={styles.filterField}>
+              Norma
+              <select value={standardFilter} onChange={(event) => setStandardFilter(event.target.value)}>
+                <option value="Todas">Todas</option>
+                {standardOptions.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-          <article className={`cardSurface ${styles.metricCard}`}>
-            <span className="miniLabel">Madurez promedio</span>
-            <b>{averageScore}%</b>
-            <span>Promedio del diagnostico inicial recibido</span>
-          </article>
-        </section>
+            <label className={styles.filterField}>
+              Responsable
+              <select value={ownerFilter} onChange={(event) => setOwnerFilter(event.target.value)}>
+                <option value="Todos">Todos</option>
+                {ownerOptions.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <section className={styles.pipelineGrid}>
-          {pipelineCounts.map((item) => (
-            <article key={item.stage} className={`cardSurface ${styles.pipelineCard}`}>
-              <span className={`${styles.stageBadge} ${getStageClass(item.stage)}`}>{item.stage}</span>
-              <b>{item.count}</b>
-              <p>Leads en esta etapa</p>
-            </article>
-          ))}
-        </section>
+            <button className="button buttonSecondary" type="button" onClick={clearFilters}>
+              Limpiar filtros
+            </button>
+          </div>
 
-        {leads.length ? (
-          <section className={styles.layout}>
-            <article className={`cardSurface ${styles.tableCard}`}>
-              <div className={styles.tableHeader}>
-                <div>
-                  <p className="eyebrow sectionEyebrow">Bandeja comercial</p>
-                  <h2>Leads captados</h2>
-                </div>
-                <p>{leads.length} registros listos para seguimiento</p>
-              </div>
-
-              <div className={styles.tableWrap}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Empresa</th>
-                      <th>Etapa</th>
-                      <th>Madurez</th>
-                      <th>Lead</th>
-                      <th>Responsable</th>
-                      <th>Contacto</th>
-                      <th>Fecha</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leads.map((lead) => {
-                      const isSelected = selectedLead?.id === lead.id;
-                      return (
-                        <tr key={lead.id} className={isSelected ? styles.selectedRow : ""} onClick={() => selectLead(lead.id)}>
-                          <td>
-                            <div className={styles.companyCell}>
-                              <strong>{lead.org.company || "Sin nombre"}</strong>
-                              <span>{lead.org.country} | {lead.org.sector || "Sector no definido"}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <span className={`${styles.stageBadge} ${getStageClass(lead.status)}`}>{lead.status}</span>
-                          </td>
-                          <td>
-                            <span className={`${styles.scoreBadge} ${getScoreClass(lead.diagnostic.score)}`}>
-                              {lead.diagnostic.score}%
-                            </span>
-                          </td>
-                          <td>
-                            <div className={styles.companyCell}>
-                              <strong>{lead.diagnostic.lead.type}</strong>
-                              <span>{lead.diagnostic.lead.score}/100</span>
-                            </div>
-                          </td>
-                          <td>{lead.owner}</td>
-                          <td>{lead.org.contact}</td>
-                          <td>{new Date(lead.createdAt).toLocaleDateString("es-MX")}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </article>
-
-            <aside className={styles.sidebar}>
-              <article className={`cardSurface ${styles.detailCard}`}>
-                <p className="eyebrow sectionEyebrow">Lead seleccionado</p>
-                <h2>{selectedLead?.org.company || "Sin registros"}</h2>
-                <p>
-                  {selectedLead
-                    ? `${selectedLead.diagnostic.standardLabel}. ${selectedLead.diagnostic.lead.type} con ${selectedLead.diagnostic.score}% de madurez y horizonte de ${selectedLead.diagnostic.duration}.`
-                    : "Aun no hay lead destacado para revisar."}
-                </p>
-
-                {selectedLead ? (
-                  <div className={styles.detailGrid}>
-                    <label className={styles.field}>
-                      Etapa comercial
-                      <select
-                        value={selectedLead.status}
-                        onChange={(event) => saveLeadUpdate(event.target.value as LeadStage)}
-                        disabled={isPending}
-                      >
-                        {allowedStages.map((stage) => (
-                          <option key={stage} value={stage}>
-                            {stage}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={styles.field}>
-                      Responsable
-                      <input
-                        value={draftOwner}
-                        onChange={(event) => setDraftOwner(event.target.value)}
-                        placeholder="Director o ejecutivo"
-                        disabled={isPending || !canManageOwners}
-                      />
-                    </label>
-
-                    <label className={`${styles.field} ${styles.fieldFull}`}>
-                      Notas internas
-                      <textarea
-                        rows={5}
-                        value={draftNotes}
-                        onChange={(event) => setDraftNotes(event.target.value)}
-                        placeholder="Siguiente llamada, objeciones, contexto para demo, fecha objetivo..."
-                        disabled={isPending}
-                      />
-                    </label>
-                  </div>
-                ) : null}
-
-                {!canManageOwners ? <p className={styles.permissionNote}>Solo Direccion puede reasignar responsables o cerrar oportunidades.</p> : null}
-
-                <div className={styles.actionRow}>
-                  <button className="button buttonPrimary" type="button" onClick={() => saveLeadUpdate()} disabled={!selectedLead || isPending}>
-                    {isPending ? "Guardando..." : "Guardar seguimiento"}
-                  </button>
-                </div>
-              </article>
-
-              <article className={`cardSurface ${styles.detailCard}`}>
-                <p className="eyebrow sectionEyebrow">Lectura comercial</p>
-                {selectedLead ? (
-                  <ul className={styles.list}>
-                    <li>Fuente: {selectedLead.source}</li>
-                    <li>Interes principal: {selectedLead.org.interest}</li>
-                    <li>Urgencia: {selectedLead.org.urgency}</li>
-                    <li>Alcance declarado: {selectedLead.org.scope || "Sin alcance capturado"}</li>
-                    <li>Preguntas contestadas: {selectedLead.diagnostic.answered} de {selectedLead.diagnostic.total}</li>
-                  </ul>
-                ) : (
-                  <p>Las recomendaciones aparecera aqui cuando llegue el primer lead.</p>
-                )}
-              </article>
-
-              <article className={`cardSurface ${styles.detailCard}`}>
-                <p className="eyebrow sectionEyebrow">Ruta sugerida</p>
-                <h3>Siguiente contacto sugerido</h3>
-                {selectedLead ? (
-                  <ul className={styles.notesList}>
-                    {selectedLead.diagnostic.recommendation.slice(0, 4).map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>Las recomendaciones aparecera aqui cuando llegue el primer lead.</p>
-                )}
-              </article>
-
-              <article className={`cardSurface ${styles.detailCard}`}>
-                <p className="eyebrow sectionEyebrow">Dominios sensibles</p>
-                <h3>Brechas de menor puntaje</h3>
-                {selectedLead ? (
-                  <ul className={styles.domainList}>
-                    {selectedLead.diagnostic.domainScores.slice(0, 4).map((item) => (
-                      <li key={item.domain}>{item.domain}: {item.score}%</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>Los dominios criticos se mostraran cuando el diagnostico genere datos reales.</p>
-                )}
-              </article>
-            </aside>
-          </section>
-        ) : (
-          <article className={`cardSurface ${styles.emptyCard}`}>
-            <p className="eyebrow sectionEyebrow">CRM vacio</p>
-            <h2>Aun no hay leads guardados.</h2>
+          <div className={styles.paginationHeader}>
             <p>
-              Cuando el usuario complete el diagnostico publico y pulse guardar, el registro aparecera aqui con su score,
-              urgencia, contacto y recomendacion comercial inicial.
+              Mostrando {filteredLeads.length ? (currentPage - 1) * pageSizeNumber + 1 : 0} a{" "}
+              {Math.min(currentPage * pageSizeNumber, filteredLeads.length)} de {filteredLeads.length} resultados
             </p>
-          </article>
-        )}
-      </div>
 
-      {toast ? <div className={styles.toast}>{toast}</div> : null}
+            <label className={styles.pageSizeField}>
+              Ver
+              <select value={pageSize} onChange={(event) => setPageSize(event.target.value)}>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+              <span>por página</span>
+            </label>
+          </div>
+
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Empresa</th>
+                  <th>Etapa</th>
+                  <th>Madurez</th>
+                  <th>Lead</th>
+                  <th>Responsable</th>
+                  <th>Prioridad</th>
+                  <th>Contacto</th>
+                  <th>Fecha</th>
+                  <th>Detalle</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedLeads.map((lead) => (
+                  <tr key={lead.id}>
+                    <td>
+                      <div className={styles.companyCell}>
+                        <strong>{lead.org.company || "Sin nombre"}</strong>
+                        <span>{lead.org.country} | {lead.org.sector || "Sector no definido"}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`${styles.stageBadge} ${getStageClass(lead.status)}`}>{formatLeadStage(lead.status)}</span>
+                    </td>
+                    <td>
+                      <span className={`${styles.scoreBadge} ${getScoreClass(lead.diagnostic.score)}`}>
+                        {lead.diagnostic.score}%
+                      </span>
+                    </td>
+                    <td>
+                      <div className={styles.companyCell}>
+                        <strong>{lead.diagnostic.lead.type}</strong>
+                        <span>{lead.diagnostic.lead.score}/100</span>
+                      </div>
+                    </td>
+                    <td>{lead.owner}</td>
+                    <td>{formatLeadPriority(lead.priority)}</td>
+                    <td>{lead.org.contact}</td>
+                    <td>{new Date(lead.createdAt).toLocaleDateString("es-MX")}</td>
+                    <td>
+                      <Link className={styles.detailLink} href={`/crm/leads/${lead.id}`}>
+                        Ver detalle
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {!filteredLeads.length ? (
+            <div className={styles.noResults}>
+              <h3>Sin resultados para estos filtros.</h3>
+              <p>Ajusta la búsqueda o limpia los filtros para volver a ver toda la bandeja.</p>
+            </div>
+          ) : null}
+
+          {filteredLeads.length ? (
+            <div className={styles.paginationFooter}>
+              <p>
+                Página {currentPage} de {totalPages}
+              </p>
+
+              <div className={styles.paginationActions}>
+                <button
+                  className="button buttonSecondary"
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </button>
+
+                <button
+                  className="button buttonSecondary"
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </article>
+      ) : (
+        <article className={`cardSurface ${styles.emptyCard}`}>
+          <p className="eyebrow sectionEyebrow">CRM vacío</p>
+          <h2>Aún no hay leads guardados.</h2>
+          <p>
+            Cuando el usuario complete el diagnóstico público y pulse guardar, el registro aparecerá aquí con su score,
+            urgencia, contacto y recomendación comercial inicial.
+          </p>
+        </article>
+      )}
     </main>
   );
 }

@@ -5,7 +5,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
 import type { AdminRole } from "@/lib/admin-auth-types";
-import { pipelineStages, type LeadStage, type SavedLead } from "@/lib/lead-types";
+import { leadPriorities, pipelineStages, type LeadHistoryEntry, type LeadHistoryKind, type LeadPriority, type LeadStage, type SavedLead } from "@/lib/lead-types";
 
 const dataDir = path.join(process.cwd(), ".data");
 const dbFile = path.join(dataDir, "transiq-crm.db");
@@ -22,8 +22,11 @@ type LeadRow = {
   id: string;
   created_at: string;
   status: string;
+  priority: string;
   owner: string;
   notes: string;
+  next_follow_up_at: string;
+  loss_reason: string;
   source: string;
   org_json: string;
   answers_json: string;
@@ -37,6 +40,18 @@ type UserRow = {
   role: string;
   password_hash: string;
   created_at: string;
+};
+
+export type { UserRow };
+
+type LeadHistoryRow = {
+  id: string;
+  lead_id: string;
+  kind: string;
+  message: string;
+  created_at: string;
+  actor_name: string;
+  actor_role: string;
 };
 
 let dbInstance: DatabaseSync | null = null;
@@ -81,17 +96,51 @@ function initializeDatabase(db: DatabaseSync) {
       id TEXT PRIMARY KEY,
       created_at TEXT NOT NULL,
       status TEXT NOT NULL,
+      priority TEXT NOT NULL DEFAULT 'Media',
       owner TEXT NOT NULL,
       notes TEXT NOT NULL,
+      next_follow_up_at TEXT NOT NULL DEFAULT '',
+      loss_reason TEXT NOT NULL DEFAULT '',
       source TEXT NOT NULL,
       org_json TEXT NOT NULL,
       answers_json TEXT NOT NULL,
       diagnostic_json TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS lead_history (
+      id TEXT PRIMARY KEY,
+      lead_id TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      message TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      actor_name TEXT NOT NULL,
+      actor_role TEXT NOT NULL,
+      FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+    );
   `);
 
+  ensureLeadColumns(db);
   migrateLegacyLeads(db);
   seedUsers(db);
+}
+
+function hasColumn(db: DatabaseSync, table: string, column: string) {
+  const rows = db.prepare(`PRAGMA table_info(${table})`).all() as Array<{ name: string }>;
+  return rows.some((row) => row.name === column);
+}
+
+function ensureLeadColumns(db: DatabaseSync) {
+  if (!hasColumn(db, "leads", "priority")) {
+    db.exec("ALTER TABLE leads ADD COLUMN priority TEXT NOT NULL DEFAULT 'Media';");
+  }
+
+  if (!hasColumn(db, "leads", "next_follow_up_at")) {
+    db.exec("ALTER TABLE leads ADD COLUMN next_follow_up_at TEXT NOT NULL DEFAULT '';");
+  }
+
+  if (!hasColumn(db, "leads", "loss_reason")) {
+    db.exec("ALTER TABLE leads ADD COLUMN loss_reason TEXT NOT NULL DEFAULT '';");
+  }
 }
 
 function hashPassword(password: string) {
@@ -115,12 +164,16 @@ function normalizeLead(raw: Partial<SavedLead>): SavedLead | null {
     id: raw.id,
     createdAt: raw.createdAt,
     status: pipelineStages.includes(raw.status as LeadStage) ? (raw.status as LeadStage) : "Nuevo",
+    priority: leadPriorities.includes(raw.priority as LeadPriority) ? (raw.priority as LeadPriority) : "Media",
     owner: typeof raw.owner === "string" ? raw.owner : "Sin asignar",
     notes: typeof raw.notes === "string" ? raw.notes : "",
-    source: "Diagnostico publico",
+    nextFollowUpAt: typeof raw.nextFollowUpAt === "string" ? raw.nextFollowUpAt : "",
+    lossReason: typeof raw.lossReason === "string" ? raw.lossReason : "",
+    source: typeof raw.source === "string" && raw.source.trim() ? raw.source : "Diagnóstico público",
     org: raw.org,
     answers: raw.answers,
     diagnostic: raw.diagnostic,
+    history: Array.isArray(raw.history) ? raw.history : [],
   };
 }
 
@@ -134,8 +187,8 @@ function migrateLegacyLeads(db: DatabaseSync) {
   if (!Array.isArray(parsed) || parsed.length === 0) return;
 
   const insert = db.prepare(`
-    INSERT INTO leads (id, created_at, status, owner, notes, source, org_json, answers_json, diagnostic_json)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO leads (id, created_at, status, priority, owner, notes, next_follow_up_at, loss_reason, source, org_json, answers_json, diagnostic_json)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   db.exec("BEGIN");
@@ -147,8 +200,11 @@ function migrateLegacyLeads(db: DatabaseSync) {
         lead.id,
         lead.createdAt,
         lead.status,
+        lead.priority,
         lead.owner,
         lead.notes,
+        lead.nextFollowUpAt,
+        lead.lossReason,
         lead.source,
         JSON.stringify(lead.org),
         JSON.stringify(lead.answers),
@@ -173,7 +229,7 @@ function getSeedUsers(): SeedUser[] {
       {
         email: directorEmail,
         password: directorPassword,
-        name: process.env.TRANSIQ_DIRECTOR_NAME || "Direccion TransiQ",
+        name: process.env.TRANSIQ_DIRECTOR_NAME || "Dirección TransiQ",
         role: "Director",
       },
       {
@@ -190,7 +246,7 @@ function getSeedUsers(): SeedUser[] {
       {
         email: "director@transiq.local",
         password: "TransiQ2026!",
-        name: "Direccion TransiQ",
+        name: "Dirección TransiQ",
         role: "Director",
       },
       {
@@ -257,6 +313,11 @@ export function verifyUserCredentials(email: string, password: string) {
   };
 }
 
+export function getUserRows() {
+  const db = getDb();
+  return db.prepare("SELECT id, email, name, role, created_at FROM users ORDER BY datetime(created_at) ASC").all() as UserRow[];
+}
+
 export function getLeadRows() {
   const db = getDb();
   return db.prepare("SELECT * FROM leads ORDER BY datetime(created_at) DESC").all() as LeadRow[];
@@ -265,14 +326,17 @@ export function getLeadRows() {
 export function insertLead(lead: SavedLead) {
   const db = getDb();
   db.prepare(`
-    INSERT INTO leads (id, created_at, status, owner, notes, source, org_json, answers_json, diagnostic_json)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO leads (id, created_at, status, priority, owner, notes, next_follow_up_at, loss_reason, source, org_json, answers_json, diagnostic_json)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     lead.id,
     lead.createdAt,
     lead.status,
+    lead.priority,
     lead.owner,
     lead.notes,
+    lead.nextFollowUpAt,
+    lead.lossReason,
     lead.source,
     JSON.stringify(lead.org),
     JSON.stringify(lead.answers),
@@ -280,16 +344,35 @@ export function insertLead(lead: SavedLead) {
   );
 }
 
+export function insertLeadHistoryEntry(entry: LeadHistoryEntry) {
+  const db = getDb();
+  db.prepare(`
+    INSERT INTO lead_history (id, lead_id, kind, message, created_at, actor_name, actor_role)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    entry.id,
+    entry.leadId,
+    entry.kind,
+    entry.message,
+    entry.createdAt,
+    entry.actorName,
+    entry.actorRole,
+  );
+}
+
 export function updateLeadRow(lead: SavedLead) {
   const db = getDb();
   db.prepare(`
     UPDATE leads
-    SET status = ?, owner = ?, notes = ?, org_json = ?, answers_json = ?, diagnostic_json = ?
+    SET status = ?, priority = ?, owner = ?, notes = ?, next_follow_up_at = ?, loss_reason = ?, org_json = ?, answers_json = ?, diagnostic_json = ?
     WHERE id = ?
   `).run(
     lead.status,
+    lead.priority,
     lead.owner,
     lead.notes,
+    lead.nextFollowUpAt,
+    lead.lossReason,
     JSON.stringify(lead.org),
     JSON.stringify(lead.answers),
     JSON.stringify(lead.diagnostic),
@@ -302,17 +385,45 @@ export function findLeadRow(id: string) {
   return db.prepare("SELECT * FROM leads WHERE id = ? LIMIT 1").get(id) as LeadRow | undefined;
 }
 
-export function rowToLead(row: LeadRow): SavedLead {
+export function getLeadHistoryRows(leadIds?: string[]) {
+  const db = getDb();
+  if (!leadIds?.length) {
+    return db.prepare("SELECT * FROM lead_history ORDER BY datetime(created_at) DESC").all() as LeadHistoryRow[];
+  }
+
+  const placeholders = leadIds.map(() => "?").join(", ");
+  return db
+    .prepare(`SELECT * FROM lead_history WHERE lead_id IN (${placeholders}) ORDER BY datetime(created_at) DESC`)
+    .all(...leadIds) as LeadHistoryRow[];
+}
+
+export function rowToLeadHistoryEntry(row: LeadHistoryRow): LeadHistoryEntry {
+  return {
+    id: row.id,
+    leadId: row.lead_id,
+    kind: row.kind as LeadHistoryKind,
+    message: row.message,
+    createdAt: row.created_at,
+    actorName: row.actor_name,
+    actorRole: row.actor_role,
+  };
+}
+
+export function rowToLead(row: LeadRow, history: LeadHistoryEntry[] = []): SavedLead {
   return {
     id: row.id,
     createdAt: row.created_at,
     status: pipelineStages.includes(row.status as LeadStage) ? (row.status as LeadStage) : "Nuevo",
+    priority: leadPriorities.includes(row.priority as LeadPriority) ? (row.priority as LeadPriority) : "Media",
     owner: row.owner || "Sin asignar",
     notes: row.notes || "",
-    source: "Diagnostico publico",
+    nextFollowUpAt: row.next_follow_up_at || "",
+    lossReason: row.loss_reason || "",
+    source: row.source || "Diagnóstico público",
     org: safeJsonParse(row.org_json, {}),
     answers: safeJsonParse<string[]>(row.answers_json, []),
     diagnostic: safeJsonParse(row.diagnostic_json, {}),
+    history,
   } as SavedLead;
 }
 
