@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { AdminSession } from "@/lib/admin-auth-types";
 import { formatLeadPriority, formatLeadStage, leadPriorities, pipelineStages, type LeadPriority, type LeadStage, type SavedLead } from "@/lib/lead-types";
 import type { CrmUser } from "@/lib/team-store";
+import { getLeadContactName, getLeadEmail, getLeadPhone } from "@/lib/lead-contact";
 import styles from "./lead-detail.module.css";
 
 type LeadDetailProps = {
@@ -216,8 +217,18 @@ export function LeadDetail({ lead: initialLead, session, users }: LeadDetailProp
             </label>
 
             <label className={styles.field}>
-              Contacto
-              <input value={lead.org.contact} disabled />
+              Nombre del lead
+              <input value={getLeadContactName(lead.org)} disabled />
+            </label>
+
+            <label className={styles.field}>
+              Correo
+              <input value={getLeadEmail(lead.org)} disabled />
+            </label>
+
+            <label className={styles.field}>
+              Teléfono
+              <input value={getLeadPhone(lead.org)} disabled />
             </label>
 
             <label className={styles.field}>
@@ -273,7 +284,9 @@ export function LeadDetail({ lead: initialLead, session, users }: LeadDetailProp
             <h3>Resumen ejecutivo del lead</h3>
             <ul className={styles.list}>
               <li>Prioridad actual: {formatLeadPriority(lead.priority)}.</li>
-              <li>Contacto recibido: {lead.org.contact}.</li>
+              <li>Nombre del lead: {getLeadContactName(lead.org)}.</li>
+              <li>Correo: {getLeadEmail(lead.org)}.</li>
+              <li>Teléfono: {getLeadPhone(lead.org)}.</li>
               <li>Interés inicial: {formatInterest(lead.org.interest)} con urgencia {formatUrgency(lead.org.urgency).toLowerCase()}.</li>
               <li>Fuente atribuida: {formatLeadSource(lead.source)}.</li>
               <li>Próximo seguimiento sugerido: {lead.nextFollowUpAt || "Sin fecha definida"}.</li>

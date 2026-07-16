@@ -6,11 +6,12 @@ export function DashboardSection() {
     <section className="section">
       <div className="shell">
         <div className="sectionHeading">
-          <p className="eyebrow sectionEyebrow">Dashboards de operación</p>
-          <h2>Diseñado para clientes, equipo comercial y especialistas técnicos.</h2>
+          <p className="eyebrow sectionEyebrow">Dashboards para decisiones distintas</p>
+          <h2>Cliente, comercial y técnico no leen el mismo tablero.</h2>
           <p>
-            La aplicación debe generar valor para la organización evaluada y, al
-            mismo tiempo, alimentar inteligencia comercial para optimizar la gestión comercial.
+            La plataforma debe generar valor para la organización evaluada y, al
+            mismo tiempo, alimentar inteligencia comercial y técnica sin
+            duplicar capturas ni análisis.
           </p>
         </div>
 

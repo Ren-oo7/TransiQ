@@ -2,7 +2,7 @@
 
 import crypto from "node:crypto";
 import type { AdminRole, AdminSession } from "@/lib/admin-auth-types";
-import { isUsingDemoSeed, verifyUserCredentials } from "@/lib/crm-db";
+import { isUserActive, isUsingDemoSeed, verifyUserCredentials } from "@/lib/crm-db";
 
 export const authCookieName = "transiq_admin_session";
 
@@ -67,6 +67,7 @@ export function readSessionToken(token?: string | null): AdminSession | null {
   try {
     const payload = JSON.parse(Buffer.from(serializedPayload, "base64url").toString("utf8")) as SessionPayload;
     if (!payload.email || !payload.name || !payload.role) return null;
+    if (!isUserActive(payload.email)) return null;
 
     return {
       email: payload.email,

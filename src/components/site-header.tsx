@@ -31,10 +31,10 @@ export function SiteHeader() {
         </nav>
 
         <div className={styles.actions}>
-          <Link className="button buttonGhost" href={transiqAppUrl}>
-            Acceso TransiQ
+          <Link className={`button buttonGhost ${styles.headerButton} ${styles.accessButton}`} href={transiqAppUrl}>
+            Acceso
           </Link>
-          <Link className="button buttonPrimary" href={buildAttributedHref("/diagnostico", { canal: "header" })}>
+          <Link className={`button buttonPrimary ${styles.headerButton}`} href={buildAttributedHref("/diagnostico", { canal: "header" })}>
             Iniciar diagnóstico
           </Link>
         </div>
@@ -65,14 +65,14 @@ export function SiteHeader() {
             <hr className={styles.mobileDivider} />
             <div className={styles.mobileActions}>
               <Link
-                className="button buttonGhost"
+                className={`button buttonGhost ${styles.headerButton}`}
                 href={transiqAppUrl}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Acceso TransiQ
+                Acceso
               </Link>
               <Link
-                className="button buttonPrimary"
+                className={`button buttonPrimary ${styles.headerButton}`}
                 href={buildAttributedHref("/diagnostico", { canal: "header-movil" })}
                 onClick={() => setIsMobileMenuOpen(false)}
               >

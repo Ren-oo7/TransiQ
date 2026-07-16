@@ -6,6 +6,16 @@
     linear-gradient(135deg, #061427, #08213e 55%, #0b4f79);
   color: white;
   text-align: center;
+  padding: 112px 0;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 36px;
+  pointer-events: none;
 }
 
 .heroBg {
@@ -16,16 +26,24 @@
   height: 100%;
   background-size: cover;
   background-position: center;
-  opacity: 0.08;
+  opacity: 0.13;
   filter: grayscale(100%);
   pointer-events: none;
   z-index: 0;
 }
 
 .content {
-  max-width: 1050px;
+  max-width: 920px;
   position: relative;
   z-index: 1;
+}
+
+.content h2 {
+  margin: 0 auto 22px;
+  max-width: 880px;
+  font-size: clamp(2.45rem, 5vw, 4.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.058em;
 }
 
 .lead {
@@ -49,6 +67,8 @@
 }
 
 @media (max-width: 640px) {
+  .section { padding: 80px 0; }
+  .section::before { inset: 12px; border-radius: 24px; }
   .actions {
     flex-direction: column;
     align-items: stretch;

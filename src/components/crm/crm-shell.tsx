@@ -23,7 +23,7 @@ const crmNavGroups = [
   {
     label: "Captación",
     items: [
-      { href: "/crm/campanas", label: "Campañas" },
+      { href: "/crm/campanas", label: "Canales de captación" },
       { href: "/crm/reportes", label: "Reportes" },
     ],
   },
@@ -31,7 +31,6 @@ const crmNavGroups = [
     label: "Gestión interna",
     items: [
       { href: "/crm/equipo", label: "Equipo" },
-      { href: "/crm/configuracion", label: "Configuración" },
     ],
   },
 ];
@@ -94,19 +93,21 @@ export function CrmShell({ children }: CrmShellProps) {
                     </nav>
                   </div>
                 ))}
+                <div className={styles.navWrap}>
+                  <span className={styles.groupLabel}>Accesos</span>
+                  <nav className={`${styles.nav} ${styles.accessNav}`} aria-label="Accesos del CRM">
+                    <Link href="/">
+                      <span>Ir al sitio</span>
+                    </Link>
+                    <Link href={transiqAppUrl}>
+                      <span>Acceso TransiQ</span>
+                    </Link>
+                    <button type="button" onClick={logout}>
+                      <span>Salir</span>
+                    </button>
+                  </nav>
+                </div>
               </div>
-            </div>
-
-            <div className={styles.actions}>
-              <Link className="button buttonGhost" href="/">
-                Ir al sitio
-              </Link>
-              <button className="button buttonLight" type="button" onClick={logout}>
-                Salir
-              </button>
-              <Link className="button buttonPrimary" href={transiqAppUrl}>
-                Acceso TransiQ
-              </Link>
             </div>
           </div>
         </aside>

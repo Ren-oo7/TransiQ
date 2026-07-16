@@ -6,8 +6,12 @@ export function ArchitectureSection() {
     <section className="section">
       <div className="shell">
         <div className="sectionHeading">
-          <p className="eyebrow sectionEyebrow">Arquitectura web propuesta</p>
-          <h2>Ruta técnica para evolucionar esta experiencia comercial.</h2>
+          <p className="eyebrow sectionEyebrow">Todo conectado</p>
+          <h2>Lo que puedes resolver con TransiQ en un solo lugar.</h2>
+          <p>
+            Desde el diagnóstico inicial hasta el seguimiento, la idea es que tu
+            sistema tenga continuidad, claridad y mejor trazabilidad.
+          </p>
         </div>
         <div className={styles.grid}>
           {architectureItems.map((item) => (

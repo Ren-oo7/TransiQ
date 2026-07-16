@@ -5,6 +5,7 @@ import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import type { AdminSession } from "@/lib/admin-auth-types";
 import { formatLeadPriority, formatLeadStage, pipelineStages, type LeadStage, type SavedLead } from "@/lib/lead-types";
 import type { CrmUser } from "@/lib/team-store";
+import { getLeadContactName, getLeadContactSearchText, getLeadEmail, getLeadPhone } from "@/lib/lead-contact";
 import styles from "./admin-dashboard.module.css";
 
 type AdminDashboardProps = {
@@ -61,7 +62,7 @@ export function AdminDashboard({ leads, session, users }: AdminDashboardProps) {
 
       const haystack = [
         lead.org.company,
-        lead.org.contact,
+        getLeadContactSearchText(lead.org),
         lead.org.country,
         lead.org.sector,
         lead.owner,
@@ -143,7 +144,7 @@ export function AdminDashboard({ leads, session, users }: AdminDashboardProps) {
         </article>
 
         <article className={`cardSurface ${styles.metricCard}`}>
-          <span className="miniLabel">Leads estratégicos</span>
+          <span className="miniLabel">Leads prioritarios</span>
           <b>{strategicLeads}</b>
           <span>Score comercial mayor o igual a 70</span>
         </article>
@@ -257,10 +258,12 @@ export function AdminDashboard({ leads, session, users }: AdminDashboardProps) {
                   <th>Empresa</th>
                   <th>Etapa</th>
                   <th>Madurez</th>
-                  <th>Lead</th>
+                  <th>Oportunidad</th>
                   <th>Responsable</th>
                   <th>Prioridad</th>
-                  <th>Contacto</th>
+                  <th>Nombre</th>
+                  <th>Correo</th>
+                  <th>Teléfono</th>
                   <th>Fecha</th>
                   <th>Detalle</th>
                 </tr>
@@ -290,7 +293,9 @@ export function AdminDashboard({ leads, session, users }: AdminDashboardProps) {
                     </td>
                     <td>{lead.owner}</td>
                     <td>{formatLeadPriority(lead.priority)}</td>
-                    <td>{lead.org.contact}</td>
+                    <td>{getLeadContactName(lead.org)}</td>
+                    <td>{getLeadEmail(lead.org)}</td>
+                    <td>{getLeadPhone(lead.org)}</td>
                     <td>{new Date(lead.createdAt).toLocaleDateString("es-MX")}</td>
                     <td>
                       <Link className={styles.detailLink} href={`/crm/leads/${lead.id}`}>

@@ -59,7 +59,7 @@ export function CrmOverview({ leads, session }: CrmOverviewProps) {
         </article>
 
         <article className={`cardSurface ${styles.metricCard}`}>
-          <span className="miniLabel">Leads estratégicos</span>
+          <span className="miniLabel">Leads prioritarios</span>
           <div className={styles.metricValue}>{strategicLeads}</div>
           <p>Casos con score comercial de 70 o superior.</p>
         </article>
@@ -116,7 +116,7 @@ export function CrmOverview({ leads, session }: CrmOverviewProps) {
           <p className="eyebrow sectionEyebrow">Lectura rápida</p>
           <h3>Qué revisar primero hoy</h3>
           <p>
-            Prioriza oportunidades abiertas, leads estratégicos y casos con urgencia alta para mantener el embudo en
+            Prioriza oportunidades abiertas, leads prioritarios y casos con urgencia alta para mantener el embudo en
             movimiento y evitar seguimientos vencidos.
           </p>
           <Link className="button buttonGhost" href="/crm/reportes">
@@ -130,6 +130,9 @@ export function CrmOverview({ leads, session }: CrmOverviewProps) {
           <div>
             <p className="eyebrow sectionEyebrow">Captación reciente</p>
             <h2>Últimos leads recibidos</h2>
+            <p className={styles.recentLimit}>
+              Mostrando los {Math.min(5, leads.length)} más recientes de {leads.length} leads
+            </p>
           </div>
           <Link className="button buttonSecondary" href="/crm/leads">
             Ver todos

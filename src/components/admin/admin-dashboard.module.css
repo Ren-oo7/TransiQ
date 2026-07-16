@@ -1,5 +1,7 @@
 .grid {
   display: grid;
+  width: 100%;
+  min-width: 0;
   gap: 24px;
   padding-bottom: 28px;
 }
@@ -96,6 +98,7 @@
 }
 
 .tableCard {
+  min-width: 0;
   padding: 24px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 253, 0.96));
 }
@@ -128,7 +131,11 @@
 }
 
 .tableWrap {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
 }
 
 .paginationHeader,
@@ -177,7 +184,7 @@
 
 .filters {
   display: grid;
-  grid-template-columns: minmax(240px, 1.5fr) repeat(4, minmax(0, 1fr)) auto;
+  grid-template-columns: minmax(190px, 1.35fr) repeat(4, minmax(120px, 1fr)) auto;
   gap: 12px;
   margin-bottom: 20px;
   align-items: end;
@@ -201,7 +208,19 @@
 
 .table {
   width: 100%;
+  min-width: 1380px;
   border-collapse: collapse;
+}
+
+.table th:nth-child(8),
+.table td:nth-child(8) {
+  min-width: 210px;
+  overflow-wrap: anywhere;
+}
+
+.table th:nth-child(9),
+.table td:nth-child(9) {
+  min-width: 145px;
 }
 
 .table th,

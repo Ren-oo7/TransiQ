@@ -22,6 +22,8 @@
 .panelCard {
   display: grid;
   gap: 12px;
+  border-color: rgba(131, 151, 173, 0.14);
+  box-shadow: 0 10px 26px rgba(8, 33, 62, 0.045);
 }
 
 .heroCard h1,
@@ -126,6 +128,16 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.dualGrid {
+  align-items: start;
+}
+
+.panelCard {
+  align-content: start;
+  align-self: start;
+  min-width: 0;
+}
+
 .sectionHeader {
   display: flex;
   justify-content: space-between;
@@ -140,6 +152,7 @@
   background: #f6fafd;
   display: grid;
   gap: 12px;
+  border: 1px solid rgba(131, 151, 173, 0.08);
 }
 
 .tagList,

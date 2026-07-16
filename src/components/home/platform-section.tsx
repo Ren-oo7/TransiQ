@@ -1,46 +1,31 @@
-import { platformModules, workflowSteps } from "@/data/site-content";
+import Link from "next/link";
+import { buildAttributedHref } from "@/lib/lead-attribution";
 import styles from "./platform-section.module.css";
+
+const homeModules = ["Diagnóstico IA", "Brechas", "Evidencias", "Plan de acción", "Dashboard", "Recursos", "Demo autónoma", "Escalamiento opcional"];
 
 export function PlatformSection() {
   return (
-    <section className="section sectionAlt">
+    <section className={`section ${styles.section}`}>
       <div className="shell">
         <div className="sectionHeading">
-          <p className="eyebrow sectionEyebrow">Sistema de gestión inteligente</p>
-          <h2>Una plataforma para operar el sistema, no solo para diagnosticarlo.</h2>
+          <p className="eyebrow sectionEyebrow">Ruta principal</p>
+          <h2>Primero plataforma + IA. Después automatización. Al final intervención humana opcional.</h2>
           <p>
-            TransiQ debe posicionarse como un ecosistema: diagnóstico, control
-            documental, gestión de evidencias, auditorías, acciones, riesgos,
-            indicadores y reportes ejecutivos.
+            La interacción está diseñada para escalar globalmente: el usuario se autosegmenta, recibe valor automático y solo escala a especialista cuando el proyecto es estratégico, multinorma, multisitio o complejo.
           </p>
+          <Link className="button buttonPrimary" href={buildAttributedHref("/diagnostico", { canal: "home-ruta-principal" })}>Iniciar ruta automática</Link>
         </div>
 
         <div className={styles.layout}>
           <div className={`cardSurface ${styles.copy}`}>
-            <h3>Módulos funcionales propuestos</h3>
-            <p>
-              El MVP debe ser comercialmente útil desde el primer día y escalable
-              hacia una plataforma SaaS multinorma y multipaís.
-            </p>
             <div className={styles.tags}>
-              {platformModules.map((item) => (
+              {homeModules.map((item) => (
                 <span key={item}>{item}</span>
               ))}
             </div>
           </div>
 
-          <div className={`cardSurface ${styles.workflow}`}>
-            <p className="miniLabel">Flujo de valor</p>
-            <ol className={styles.timeline}>
-              {workflowSteps.map((step) => (
-                <li key={step.code}>
-                  <span>{step.code}</span>
-                  <b>{step.title}</b>
-                  <small>{step.description}</small>
-                </li>
-              ))}
-            </ol>
-          </div>
         </div>
       </div>
     </section>

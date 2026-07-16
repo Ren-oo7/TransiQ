@@ -6,6 +6,8 @@ export type Solution = {
   challenge: string;
   value: string[];
   offer: string[];
+  intro?: string;
+  evaluates?: string[];
 };
 
 export type TransitionCard = {
@@ -16,10 +18,25 @@ export type TransitionCard = {
   bullets: string[];
 };
 
+export type MissionCard = {
+  code: string;
+  title: string;
+  text: string;
+  href: string;
+  cta: string;
+};
+
+export type NormHighlight = {
+  title: string;
+  text: string;
+  href: string;
+};
+
 export const navItems = [
   { href: '/', label: 'Inicio' },
   { href: '/diagnostico?canal=navegacion', label: 'Diagnóstico' },
   { href: '/soluciones', label: 'Soluciones' },
+  { href: '/plataforma', label: 'Plataforma' },
   { href: '/recursos', label: 'Recursos' },
   { href: '/demo?canal=navegacion', label: 'Demo' },
   { href: '/contacto?canal=navegacion', label: 'Contacto' },
@@ -34,17 +51,40 @@ export const heroStandards = [
 ];
 
 export const heroMetrics = [
-  { label: 'Brechas críticas', value: '7' },
-  { label: 'Acciones abiertas', value: '22' },
-  { label: 'Evidencias pendientes', value: '38%' },
-  { label: 'Tiempo estimado', value: '120 días' },
+  { label: 'Brechas priorizadas', value: '68%' },
+  { label: 'Evidencias trazables', value: '56%' },
+  { label: 'Ruta automatizada', value: '82%' },
 ];
 
 export const featureStats = [
-  'Diagnóstico de madurez por norma, cláusula y eje de gestión.',
-  'Matriz de brechas con impacto, evidencia, prioridad y responsable.',
-  'Plan automático de transición, implementación o fortalecimiento.',
-  'Seguimiento ejecutivo con IA, evidencias, acciones e indicadores.',
+  'Cada página del sitio cumple una misión concreta: orientar, convertir, explicar, atraer o activar seguimiento.',
+  'TransiQ entrega valor antes de la llamada comercial: score, brechas, recursos y siguiente acción sugerida.',
+  'La ruta ideal escala sola: diagnóstico, plan, evidencia, dashboard y apoyo humano solo cuando agrega valor.',
+  'El contenido por norma y por necesidad fortalece SEO, claridad comercial y captación internacional.',
+];
+
+export const missionCards: MissionCard[] = [
+  {
+    code: "01",
+    title: "Necesidad del prospecto",
+    text: "El usuario entra por problema: transición, implementación, auditoría próxima, evidencias, sistema integrado o consulta técnica.",
+    href: "/soluciones",
+    cta: "Encontrar ruta",
+  },
+  {
+    code: "02",
+    title: "Valor inmediato",
+    text: "Antes de hablar con un ejecutivo, TransiQ entrega score, brechas, recursos y siguiente acción automática.",
+    href: "/diagnostico?canal=mision-valor",
+    cta: "Evaluar ahora",
+  },
+  {
+    code: "03",
+    title: "Crecimiento orgánico",
+    text: "Recursos, páginas por norma, FAQ, datos estructurados, sitemap y contenido útil para buscadores y usuarios.",
+    href: "/recursos",
+    cta: "Ver recursos",
+  },
 ];
 
 export const transitionCards: TransitionCard[] = [
@@ -53,79 +93,126 @@ export const transitionCards: TransitionCard[] = [
     title: 'Calidad y desempeño organizacional',
     status: 'FDIS / publicación esperada 2026',
     description:
-      'Ruta para evaluar enfoque al cliente, procesos, riesgos, liderazgo, desempeño, cultura de calidad, datos y mejora.',
-    bullets: ['Brechas por cláusula', 'Plan de transición', 'Indicadores y auditoría interna'],
+      'Ruta para preparar procesos, enfoque al cliente, riesgos, liderazgo, proveedores, datos y mejora continua.',
+    bullets: ['Diagnóstico de madurez', 'Brechas por requisito', 'Plan de transición y seguimiento'],
   },
   {
     code: 'ISO 14001:2015 -> ISO 14001:2026',
     title: 'Gestión ambiental y sostenibilidad',
     status: 'Nueva edición publicada',
     description:
-      'Preparación para fortalecer contexto ambiental, ciclo de vida, cumplimiento, riesgos climáticos, desempeño y evidencias.',
-    bullets: ['Aspectos e impactos', 'Cumplimiento legal', 'ESG y cambio climatico'],
+      'Preparación para fortalecer aspectos e impactos, ciclo de vida, cumplimiento legal, emergencias e indicadores.',
+    bullets: ['Contexto y desempeño ambiental', 'Cumplimiento legal', 'Riesgos y evidencias objetivas'],
   },
   {
     code: 'ISO 45001:2018 -> futura edición',
     title: 'Seguridad, salud y cultura preventiva',
     status: 'En revisión internacional',
     description:
-      'Fortalecimiento de SST, participación de trabajadores, contratistas, emergencias, incidentes y riesgos psicosociales.',
-    bullets: ['Peligros y riesgos', 'Consulta y participación', 'Bienestar laboral'],
+      'Fortalecimiento de SST, prevención, participación, incidentes, cumplimiento y evidencia operacional.',
+    bullets: ['Peligros y riesgos', 'Participación y prevención', 'Seguimiento y mejora'],
   },
   {
     code: 'ISO 37001:2016 -> ISO 37001:2025',
     title: 'Antisoborno, ética y cumplimiento',
     status: 'Actualización normativa',
     description:
-      'Ruta para debida diligencia, controles financieros y no financieros, función de cumplimiento, terceros y canal de denuncias.',
-    bullets: ['Riesgos de soborno', 'Debida diligencia', 'Gobernanza y evidencia'],
+      'Ruta para gobernanza, debida diligencia, controles antisoborno, terceros y función de cumplimiento.',
+    bullets: ['Riesgos de soborno', 'Debida diligencia', 'Controles y trazabilidad'],
   },
 ];
 
 export const platformModules = [
-  'Diagnóstico de madurez',
-  'Selector multinorma',
+  'Diagnóstico IA',
   'Matriz de brechas',
-  'Plan de transición',
+  'Plan de acción',
+  'Selector multinorma',
   'Gestión documental',
-  'Evidencias objetivas',
+  'Evidencias trazables',
   'Auditoría interna',
   'Acciones correctivas',
   'Riesgos y oportunidades',
-  'Indicadores',
-  'Revisión por dirección',
+  'Dashboards',
   'Copiloto IA',
-  'Dashboard cliente',
-  'Dashboard comercial',
-  'Dashboard técnico',
-  'Reportes PDF y Word',
+  'Reportes',
 ];
 
 export const workflowSteps = [
   {
     code: '01',
-    title: 'Registro de organización',
-    description: 'País, sector, norma, alcance, empleados, sitios y urgencia.',
+    title: 'Elige necesidad',
+    description: 'Norma, país, sector, urgencia y contexto del sistema.',
   },
   {
     code: '02',
-    title: 'Diagnóstico por norma',
-    description: 'Preguntas ponderadas por cláusula, eje y criticidad.',
+    title: 'IA interpreta',
+    description: 'Madurez, brechas, prioridad y contexto operativo.',
   },
   {
     code: '03',
-    title: 'Resultado de madurez',
-    description: 'Semáforo, brechas, riesgos prioritarios y ruta sugerida.',
+    title: 'Ruta automática',
+    description: 'Diagnóstico, recurso, demo o plan sugerido.',
   },
   {
     code: '04',
-    title: 'Plan de acción',
-    description: 'Fases, responsables, evidencias, fechas e indicadores.',
+    title: 'Acción inmediata',
+    description: 'Reporte, checklist, dashboard o simulación útil.',
   },
   {
     code: '05',
-    title: 'Seguimiento',
-    description: 'Dashboard, alertas, auditorías, acciones correctivas y reportes.',
+    title: 'Escala si conviene',
+    description: 'Especialista humano solo cuando aporta valor real.',
+  },
+];
+
+export const homeFlowSteps = [
+  {
+    code: "01",
+    title: "Elige necesidad",
+    description: "Norma, país, sector y urgencia.",
+  },
+  {
+    code: "02",
+    title: "IA interpreta",
+    description: "Madurez, contexto y prioridad.",
+  },
+  {
+    code: "03",
+    title: "Ruta automática",
+    description: "Diagnóstico, recurso, demo o plan.",
+  },
+  {
+    code: "04",
+    title: "Acción inmediata",
+    description: "Reporte, checklist, dashboard o simulación.",
+  },
+  {
+    code: "05",
+    title: "Escala si conviene",
+    description: "Especialista solo cuando agrega valor.",
+  },
+];
+
+export const normHighlights: NormHighlight[] = [
+  {
+    title: "ISO 9001:2026",
+    text: "Calidad, procesos, riesgos, datos y mejora continua.",
+    href: "/soluciones/iso-9001",
+  },
+  {
+    title: "ISO 14001:2026",
+    text: "Desempeño ambiental, cumplimiento, ciclo de vida y sostenibilidad.",
+    href: "/soluciones/iso-14001",
+  },
+  {
+    title: "ISO 45001",
+    text: "SST, prevención, participación y evidencia operacional.",
+    href: "/soluciones/iso-45001",
+  },
+  {
+    title: "ISO/IEC 27001",
+    text: "SGSI, riesgos, controles, evidencia técnica y ciberseguridad.",
+    href: "/soluciones/iso-27001",
   },
 ];
 
@@ -186,28 +273,28 @@ export const launchCalendar = [
 
 export const architectureItems = [
   {
-    title: 'Diagnóstico Inteligente',
-    text: 'Evaluación multinorma automática por cláusula y eje de gestión, generando semáforos de madurez en tiempo real.',
+    title: 'Diagnóstico inteligente',
+    text: 'Evalúa madurez, contexto, urgencia y prioridades antes de iniciar una ruta más profunda.',
   },
   {
-    title: 'Planificador de Acción',
-    text: 'Algoritmo dinámico que traza una ruta de implementación detallada con plazos, responsables y entregables.',
+    title: 'Brechas y plan de acción',
+    text: 'Convierte hallazgos en prioridades, responsables, evidencias y siguientes pasos concretos.',
   },
   {
-    title: 'Gestor de Evidencias',
-    text: 'Repositorio seguro para recolectar y almacenar evidencias objetivas trazables de cara a auditorías de certificación.',
+    title: 'Gestión de evidencias',
+    text: 'Ordena registros, pruebas y documentos para demostrar mejor el sistema frente a auditorías.',
   },
   {
-    title: 'Auditoría y Desempeño',
-    text: 'Herramientas para planificar auditorías internas, registrar no conformidades, realizar análisis de causa raíz y KPIs.',
+    title: 'Auditoría y seguimiento',
+    text: 'Da continuidad a acciones, hallazgos, indicadores y mejoras sin perder trazabilidad.',
   },
   {
-    title: 'Seguridad y Trazabilidad',
-    text: 'Control de accesos estructurado, firmas digitales, perfiles por rol y trazabilidad completa de cambios en el SG.',
+    title: 'Dashboards claros',
+    text: 'Entrega lectura distinta para cliente, comercial y equipo técnico según la decisión que deben tomar.',
   },
   {
-    title: 'Copiloto de IA',
-    text: 'Asistencia inteligente para interpretar requisitos normativos complejos y sugerir acciones correctivas eficaces.',
+    title: 'Copiloto IA',
+    text: 'Sugiere rutas, ordena información y ayuda a traducir requisitos complejos en acciones entendibles.',
   },
 ];
 
@@ -215,7 +302,9 @@ export const solutions: Solution[] = [
   {
     slug: 'iso-9001',
     label: 'ISO 9001:2026',
-    summary: 'Prepara la transición de calidad con diagnóstico, brechas y ruta ejecutiva antes de llegar a auditoría.',
+    summary: 'Prepara ISO 9001:2026 con enfoque en procesos, datos y mejora continua.',
+    intro: 'Evalúa liderazgo, enfoque al cliente, riesgos, proveedores, indicadores, gestión del cambio, conocimiento organizacional y evidencia de desempeño.',
+    evaluates: ['Liderazgo y contexto', 'Procesos y enfoque al cliente', 'Riesgos y oportunidades', 'Control de proveedores', 'Indicadores y análisis de datos', 'Auditoría interna y mejora'],
     audience: 'Dirección general, calidad, operaciones y responsables de mejora.',
     challenge: 'Muchas organizaciones mantienen certificado vigente, pero no saben si su sistema realmente está listo para la nueva generación ISO.',
     value: ['Diagnóstico ejecutivo de madurez', 'Priorización de brechas por impacto', 'Ruta sugerida para demo y acompañamiento comercial'],
@@ -224,7 +313,9 @@ export const solutions: Solution[] = [
   {
     slug: 'iso-14001',
     label: 'ISO 14001:2026',
-    summary: 'Convierte los cambios ambientales en una ruta clara de preparación, evidencia y decisión.',
+    summary: 'Transición ISO 14001:2026 con desempeño ambiental y evidencia objetiva.',
+    intro: 'Evalúa aspectos e impactos, ciclo de vida, cumplimiento legal, riesgos ambientales, comunicación, emergencias e indicadores ambientales.',
+    evaluates: ['Aspectos e impactos', 'Cumplimiento legal ambiental', 'Ciclo de vida', 'Riesgos ambientales', 'Emergencias', 'Indicadores ambientales'],
     audience: 'Gerentes ambientales, HSE, cumplimiento y operaciones.',
     challenge: 'El reto no es solo actualizar documentos; es demostrar control ambiental, riesgos y evidencia de desempeño.',
     value: ['Narrativa comercial por norma', 'Diagnóstico de preparación ambiental', 'Embudo de conversión a demo técnica'],
@@ -233,7 +324,9 @@ export const solutions: Solution[] = [
   {
     slug: 'iso-45001',
     label: 'ISO 45001',
-    summary: 'Posiciona la preparación SST como proyecto estratégico, no solo documental.',
+    summary: 'Fortalece ISO 45001 con cultura preventiva, riesgos SST y control operacional.',
+    intro: 'Evalúa peligros, riesgos, consulta y participación, contratistas, emergencias, incidentes, controles e indicadores de SST.',
+    evaluates: ['Peligros y riesgos SST', 'Consulta y participación', 'Contratistas', 'Emergencias', 'Incidentes', 'Indicadores SST'],
     audience: 'Responsables de SST, HSE, operaciones y recursos humanos.',
     challenge: 'Las empresas necesitan evaluar participación, riesgos, cumplimiento y cultura preventiva antes de cualquier transición.',
     value: ['Contenido comercial especializado', 'Diagnóstico público de enganche', 'Lead scoring para priorizar oportunidades'],
@@ -242,11 +335,24 @@ export const solutions: Solution[] = [
   {
     slug: 'iso-37001',
     label: 'ISO 37001:2025',
-    summary: 'Impulsa servicios de antisoborno con una propuesta clara de diagnóstico, control y gobernanza.',
+    summary: 'Actualiza ISO 37001:2025 con gobernanza, debida diligencia y controles antisoborno.',
+    intro: 'Evalúa riesgos de soborno, función de cumplimiento, controles financieros y no financieros, terceros, canal de denuncias e investigaciones.',
+    evaluates: ['Riesgos de soborno', 'Debida diligencia', 'Función de cumplimiento', 'Controles financieros', 'Terceros', 'Canal de denuncias'],
     audience: 'Cumplimiento, legal, auditoría y dirección.',
     challenge: 'Los equipos necesitan identificar brechas de gobernanza y debida diligencia sin mezclar certificación con asesoría impropia.',
     value: ['Mensajes alineados a imparcialidad', 'Ruta de evaluación preliminar', 'Preparación para seguimiento comercial serio'],
     offer: ['Landing especializada', 'Diagnóstico ejecutivo', 'Canal de paso a demo o contacto'],
+  },
+  {
+    slug: 'iso-27001',
+    label: 'ISO/IEC 27001',
+    summary: 'Fortalece ISO/IEC 27001 con riesgos, controles y evidencia técnica.',
+    intro: 'Evalúa alcance del SGSI, riesgos de seguridad, Declaración de Aplicabilidad, controles ISO/IEC 27002, incidentes, continuidad, nube y proveedores.',
+    evaluates: ['Alcance del SGSI', 'Riesgos de seguridad', 'Declaración de Aplicabilidad', 'Controles', 'Incidentes', 'Continuidad'],
+    audience: 'Responsables de seguridad de la información, tecnología, riesgos, cumplimiento y dirección.',
+    challenge: 'El SGSI requiere conectar riesgos, controles y evidencia técnica en una ruta trazable y útil para la operación.',
+    value: ['Diagnóstico de madurez del SGSI', 'Brechas y evidencia por control', 'Ruta automática hacia plan y seguimiento'],
+    offer: ['Página especializada por norma', 'Diagnóstico guiado', 'Demo de riesgos, controles y evidencia'],
   },
   {
     slug: 'sistema-integrado',
@@ -262,15 +368,27 @@ export const solutions: Solution[] = [
 export const resources = [
   {
     title: 'Checklist de transición ISO 2026',
-    description: 'Lead magnet para captar organizaciones que ya saben que necesitan prepararse pero aún no inician.',
+    description: 'Liderazgo, riesgos, documentos, evidencias, auditoría interna e indicadores.',
   },
   {
-    title: 'Guía ejecutiva para alta dirección',
-    description: 'Material de apoyo para explicar riesgos, impacto y urgencia de la transición normativa.',
+    title: 'Guía para Alta Dirección',
+    description: 'Riesgos ejecutivos, decisiones clave, ruta de 90 días y seguimiento.',
   },
   {
-    title: 'Webinar de preparación por norma',
-    description: 'Pieza de campaña complementaria para impulsar registro, asistencia y seguimiento comercial.',
+    title: 'Preparación por norma',
+    description: '9001, 14001, 45001, 37001, 27001 y Sistemas Integrados.',
+  },
+  {
+    title: 'Matriz de brechas por norma',
+    description: 'Impacto, criticidad, evidencias, procesos responsables y acciones.',
+  },
+  {
+    title: 'Madurez ISO',
+    description: 'Evalúa score, urgencia, complejidad y ruta recomendada.',
+  },
+  {
+    title: 'Kit de diagnóstico para clientes',
+    description: 'Reportes, plantillas y rutas para administrar múltiples organizaciones.',
   },
 ];
 

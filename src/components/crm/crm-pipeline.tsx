@@ -48,13 +48,6 @@ function getBlockWidth(columns: number) {
   return 980;
 }
 
-function formatDate(value: string) {
-  return new Date(value).toLocaleDateString("es-MX", {
-    day: "2-digit",
-    month: "short",
-  });
-}
-
 function getPriorityClass(priority: LeadPriority) {
   if (priority === "Alta") return styles.priorityHigh;
   if (priority === "Media") return styles.priorityMedium;
@@ -95,6 +88,8 @@ export function CrmPipeline({ leads, session, users }: CrmPipelineProps) {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [isDraggingBoard, setIsDraggingBoard] = useState(false);
+  const [draggedLeadId, setDraggedLeadId] = useState("");
+  const [dragOverStage, setDragOverStage] = useState<LeadStage | null>(null);
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const boardRef = useRef<HTMLElement | null>(null);
   const dragStartX = useRef(0);
@@ -228,7 +223,7 @@ export function CrmPipeline({ leads, session, users }: CrmPipelineProps) {
   function handleBoardPointerDown(event: React.PointerEvent<HTMLElement>) {
     const board = boardRef.current;
     if (!board) return;
-    if ((event.target as HTMLElement).closest("select, input, button, a")) return;
+    if ((event.target as HTMLElement).closest("select, input, button, a, [draggable='true']")) return;
 
     setIsDraggingBoard(true);
     dragStartX.current = event.clientX;
@@ -250,6 +245,42 @@ export function CrmPipeline({ leads, session, users }: CrmPipelineProps) {
     if (board.hasPointerCapture(event.pointerId)) {
       board.releasePointerCapture(event.pointerId);
     }
+  }
+
+  function handleLeadDragStart(event: React.DragEvent<HTMLElement>, leadId: string) {
+    event.stopPropagation();
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", leadId);
+    setDraggedLeadId(leadId);
+  }
+
+  function handleLeadDragEnd() {
+    setDraggedLeadId("");
+    setDragOverStage(null);
+  }
+
+  function handleStageDragOver(event: React.DragEvent<HTMLElement>, stage: LeadStage) {
+    if (!draggedLeadId || !allowedStages.some((allowedStage) => allowedStage === stage)) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    if (dragOverStage !== stage) setDragOverStage(stage);
+  }
+
+  function handleStageDrop(event: React.DragEvent<HTMLElement>, stage: LeadStage) {
+    event.preventDefault();
+    const leadId = event.dataTransfer.getData("text/plain") || draggedLeadId;
+    const draggedLead = items.find((lead) => lead.id === leadId);
+
+    setDraggedLeadId("");
+    setDragOverStage(null);
+
+    if (!draggedLead || draggedLead.status === stage || !allowedStages.some((allowedStage) => allowedStage === stage)) return;
+
+    updateLeadField(
+      leadId,
+      { status: stage },
+      `Lead movido a ${formatLeadStage(stage)}`,
+    );
   }
 
   return (
@@ -355,7 +386,12 @@ export function CrmPipeline({ leads, session, users }: CrmPipelineProps) {
               style={{ gridTemplateColumns: `repeat(${group.columns.length}, minmax(0, 1fr))` }}
             >
               {group.columns.map((column) => (
-                <section key={column.stage} className={styles.innerColumn}>
+                <section
+                  key={column.stage}
+                  className={`${styles.innerColumn} ${dragOverStage === column.stage ? styles.dropTarget : ""}`}
+                  onDragOver={(event) => handleStageDragOver(event, column.stage)}
+                  onDrop={(event) => handleStageDrop(event, column.stage)}
+                >
                   <div className={styles.innerColumnHeader}>
                     <h3>{formatLeadStage(column.stage)}</h3>
                     <span className={styles.innerCount}>{column.leads.length}</span>
@@ -364,7 +400,14 @@ export function CrmPipeline({ leads, session, users }: CrmPipelineProps) {
                   {column.leads.length ? (
                     <div className={styles.leadList}>
                       {column.leads.map((lead) => (
-                        <article key={lead.id} className={`${styles.leadCard} ${getCardTone(lead.status)}`}>
+                        <article
+                          key={lead.id}
+                          className={`${styles.leadCard} ${getCardTone(lead.status)} ${draggedLeadId === lead.id ? styles.leadCardDragging : ""}`}
+                          draggable={!isPending}
+                          onDragStart={(event) => handleLeadDragStart(event, lead.id)}
+                          onDragEnd={handleLeadDragEnd}
+                          aria-label={`${lead.org.company || "Lead sin nombre"}. Arrastra para cambiar de etapa.`}
+                        >
                           <div className={styles.cardTop}>
                             <div>
                               <Link className={styles.titleLink} href={`/crm/leads/${lead.id}`}>

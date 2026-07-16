@@ -72,8 +72,7 @@ export function CrmActivity({ leads, session }: CrmActivityProps) {
       if (lead.status === "Cerrado" || !lead.nextFollowUpAt) return false;
       return new Date(`${lead.nextFollowUpAt}T00:00:00`).getTime() < new Date(new Date().toDateString()).getTime();
     })
-    .sort((a, b) => new Date(`${a.nextFollowUpAt}T00:00:00`).getTime() - new Date(`${b.nextFollowUpAt}T00:00:00`).getTime())
-    .slice(0, 6);
+    .sort((a, b) => new Date(`${a.nextFollowUpAt}T00:00:00`).getTime() - new Date(`${b.nextFollowUpAt}T00:00:00`).getTime());
 
   const followUpsToday = leads.filter((lead) => {
     if (lead.status === "Cerrado" || !lead.nextFollowUpAt) return false;
@@ -153,7 +152,7 @@ export function CrmActivity({ leads, session }: CrmActivityProps) {
 
           {activity.length ? (
             <ul className={styles.timeline}>
-              {activity.slice(0, 14).map((item) => (
+              {activity.map((item) => (
                 <li key={item.id} className={styles.timelineItem}>
                   <div className={styles.timelineTop}>
                     <span className={`${styles.kindBadge} ${getHistoryClass(item.kind)}`}>{getHistoryLabel(item.kind)}</span>

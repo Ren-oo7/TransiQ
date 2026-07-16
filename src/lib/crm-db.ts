@@ -40,6 +40,7 @@ type UserRow = {
   role: string;
   password_hash: string;
   created_at: string;
+  active: number;
 };
 
 export type { UserRow };
@@ -89,7 +90,8 @@ function initializeDatabase(db: DatabaseSync) {
       name TEXT NOT NULL,
       role TEXT NOT NULL,
       password_hash TEXT NOT NULL,
-      created_at TEXT NOT NULL
+      created_at TEXT NOT NULL,
+      active INTEGER NOT NULL DEFAULT 1
     );
 
     CREATE TABLE IF NOT EXISTS leads (
@@ -120,8 +122,15 @@ function initializeDatabase(db: DatabaseSync) {
   `);
 
   ensureLeadColumns(db);
+  ensureUserColumns(db);
   migrateLegacyLeads(db);
   seedUsers(db);
+}
+
+function ensureUserColumns(db: DatabaseSync) {
+  if (!hasColumn(db, "users", "active")) {
+    db.exec("ALTER TABLE users ADD COLUMN active INTEGER NOT NULL DEFAULT 1;");
+  }
 }
 
 function hasColumn(db: DatabaseSync, table: string, column: string) {
@@ -298,7 +307,7 @@ export function verifyUserCredentials(email: string, password: string) {
   const db = getDb();
   const normalizedEmail = email.trim().toLowerCase();
   const row = db.prepare("SELECT * FROM users WHERE email = ? LIMIT 1").get(normalizedEmail) as UserRow | undefined;
-  if (!row) return null;
+  if (!row || row.active !== 1) return null;
 
   const incomingHash = hashPassword(password);
   const incomingBuffer = Buffer.from(incomingHash, "hex");
@@ -313,9 +322,43 @@ export function verifyUserCredentials(email: string, password: string) {
   };
 }
 
+export function isUserActive(email: string) {
+  const db = getDb();
+  const row = db.prepare("SELECT active FROM users WHERE email = ? LIMIT 1").get(email.trim().toLowerCase()) as { active: number } | undefined;
+  return row?.active === 1;
+}
+
 export function getUserRows() {
   const db = getDb();
-  return db.prepare("SELECT id, email, name, role, created_at FROM users ORDER BY datetime(created_at) ASC").all() as UserRow[];
+  return db.prepare("SELECT id, email, name, role, created_at, active FROM users ORDER BY datetime(created_at) ASC").all() as UserRow[];
+}
+
+export function createUserRow(input: { name: string; email: string; role: AdminRole; password: string }) {
+  const db = getDb();
+  const row: UserRow = {
+    id: crypto.randomUUID(),
+    email: input.email.trim().toLowerCase(),
+    name: input.name.trim(),
+    role: input.role,
+    password_hash: hashPassword(input.password),
+    created_at: new Date().toISOString(),
+    active: 1,
+  };
+  db.prepare("INSERT INTO users (id, email, name, role, password_hash, created_at, active) VALUES (?, ?, ?, ?, ?, ?, 1)")
+    .run(row.id, row.email, row.name, row.role, row.password_hash, row.created_at);
+  return row;
+}
+
+export function updateUserRow(id: string, input: { active?: boolean; role?: AdminRole; password?: string }) {
+  const db = getDb();
+  const current = db.prepare("SELECT * FROM users WHERE id = ? LIMIT 1").get(id) as UserRow | undefined;
+  if (!current) return null;
+  const active = typeof input.active === "boolean" ? (input.active ? 1 : 0) : current.active;
+  const role = input.role ?? (current.role as AdminRole);
+  const passwordHash = input.password ? hashPassword(input.password) : current.password_hash;
+  db.prepare("UPDATE users SET active = ?, role = ?, password_hash = ? WHERE id = ?")
+    .run(active, role, passwordHash, id);
+  return { ...current, active, role, password_hash: passwordHash };
 }
 
 export function getLeadRows() {

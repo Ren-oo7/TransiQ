@@ -1,12 +1,34 @@
+.section {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(84, 226, 203, 0.13), transparent 28%),
+    radial-gradient(circle at 90% 90%, rgba(12, 134, 199, 0.16), transparent 30%),
+    #07182d;
+  color: white;
+}
+
+.section :global(.sectionHeading h2) { color: white; }
+.section :global(.sectionHeading p:not(:first-child)) { color: rgba(255, 255, 255, 0.72); }
+.section :global(.sectionEyebrow) { color: var(--color-accent-soft); }
+.section :global(.sectionHeading .button) { margin-top: 18px; }
+
 .layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 24px;
 }
 
 .copy,
 .workflow {
-  padding: 30px;
+  padding: 34px;
+}
+
+.copy {
+  border-color: rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.25);
 }
 
 .copy p {
@@ -14,19 +36,39 @@
 }
 
 .tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 0;
 }
 
 .tags span {
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: #eaf6fb;
-  color: var(--color-primary);
+  position: relative;
+  min-height: 96px;
+  display: flex;
+  align-items: flex-end;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
   font-weight: 850;
+  transition: transform 200ms ease, background 200ms ease;
 }
+
+.tags span::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  box-shadow: 0 0 0 7px rgba(84, 226, 203, 0.1);
+}
+
+.tags span:hover { transform: translateY(-4px); background: rgba(255, 255, 255, 0.11); }
 
 .timeline {
   list-style: none;
@@ -70,4 +112,12 @@
   .layout {
     grid-template-columns: 1fr;
   }
+  .tags { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 540px) {
+  .copy { padding: 20px; }
+  .tags { gap: 8px; }
+  .tags span { min-height: 86px; padding: 14px; font-size: 0.9rem; }
+  .tags span::before { top: 15px; left: 15px; }
 }

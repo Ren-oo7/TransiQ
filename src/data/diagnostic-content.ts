@@ -36,7 +36,7 @@ export const answerOptions: AnswerOption[] = [
   { value: "0", label: "No implementado", score: 0 },
   { value: "25", label: "Parcial", score: 25 },
   { value: "50", label: "Implementado", score: 50 },
-  { value: "75", label: "Documentado", score: 75 },
+  { value: "75", label: "Implementado y documentado", score: 75 },
   { value: "100", label: "Medido y mejorado", score: 100 },
   { value: "na", label: "N/A", score: null },
 ];

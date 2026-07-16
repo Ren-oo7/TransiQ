@@ -57,6 +57,22 @@
   margin: 0 auto;
 }
 
+.contentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.contentGrid article { padding: 30px; }
+.contentGrid h3 { margin-top: 0; color: var(--color-primary-strong); }
+
+.flowList { display: grid; gap: 12px; margin-top: 12px; }
+.flowList div { display: grid; gap: 3px; padding: 16px; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: white; }
+.flowList b { color: var(--color-primary-strong); }
+.flowList span { color: var(--color-muted); }
+.contactCta { max-width: 760px; margin: 72px auto 0; padding: 0 20px; text-align: center; }
+.contactCta h2 { color: var(--color-primary-strong); }
+
 /* Split Grid Layout */
 .splitGrid {
   display: grid;
@@ -204,6 +220,7 @@
     grid-template-columns: 1fr;
     gap: 48px;
   }
+  .contentGrid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {

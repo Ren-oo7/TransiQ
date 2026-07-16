@@ -15,9 +15,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TransiQ | Sitio comercial y captación digital",
+  title: "TransiQ by ISOsolutions | Plataforma inteligente para Sistemas de Gestión ISO",
   description:
-    "Sitio comercial para captación, diagnóstico y conversión de oportunidades alrededor de TransiQ.",
+    "Diagnóstico, transición, evidencias, recursos y seguimiento de Sistemas de Gestión ISO con IA aplicada para México, LATAM y mercados globales.",
 };
 
 export default function RootLayout({

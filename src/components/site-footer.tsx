@@ -15,7 +15,7 @@ export function SiteFooter() {
             </span>
           </div>
           <p className={styles.tagline}>
-            Plataforma inteligente para diagnosticar, planificar y dar seguimiento a transiciones ISO.
+            Plataforma inteligente para diagnóstico, transición, implementación, evidencia y seguimiento de sistemas de gestión ISO.
           </p>
           <span className={styles.copyright}>
             © {new Date().getFullYear()} TransiQ. Todos los derechos reservados.
@@ -28,7 +28,7 @@ export function SiteFooter() {
           <Link href="/soluciones/iso-14001">ISO 14001:2026 (Ambiente)</Link>
           <Link href="/soluciones/iso-45001">ISO 45001 (SST)</Link>
           <Link href="/soluciones/iso-37001">ISO 37001:2025 (Antisoborno)</Link>
-          <Link href="/soluciones/sistema-integrado">Sistema Integrado</Link>
+          <Link href="/soluciones/iso-27001">ISO/IEC 27001 (Seguridad)</Link>
         </div>
 
         <div className={styles.linksCol}>
@@ -36,12 +36,16 @@ export function SiteFooter() {
           <Link href="/">Inicio</Link>
           <Link href={buildAttributedHref("/diagnostico", { canal: "footer" })}>Diagnóstico</Link>
           <Link href="/soluciones">Soluciones</Link>
+          <Link href="/plataforma">Plataforma</Link>
           <Link href="/recursos">Recursos</Link>
+          <Link href={buildAttributedHref("/demo", { canal: "footer" })}>Demo</Link>
           <Link href={buildAttributedHref("/contacto", { canal: "footer" })}>Contacto</Link>
         </div>
 
         <div className={styles.legalCol}>
-          <h4>Equipo Interno</h4>
+          <h4>Legal y equipo</h4>
+          <Link href="/legal/privacidad">Aviso de privacidad</Link>
+          <Link href="/legal/imparcialidad">Declaración de imparcialidad</Link>
           <Link href="/login">Acceso CRM Staff</Link>
           <p className={styles.disclaimer}>
             <b>Nota de Imparcialidad:</b> El diagnóstico emitido por TransiQ / ISOsolutions tiene fines de orientación, preparación y mejora. No sustituye una auditoría de certificación y no garantiza la obtención de certificados.

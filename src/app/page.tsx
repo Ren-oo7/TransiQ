@@ -1,5 +1,3 @@
-import { ArchitectureSection } from "@/components/home/architecture-section";
-import { DashboardSection } from "@/components/home/dashboard-section";
 import { FeatureStatsSection } from "@/components/home/feature-stats-section";
 import { FinalCtaSection } from "@/components/home/final-cta-section";
 import { HeroSection } from "@/components/home/hero-section";
@@ -12,11 +10,9 @@ export default function Home() {
     <main>
       <HeroSection />
       <FeatureStatsSection />
-      <TransitionsSection />
       <PlatformSection />
-      <DashboardSection />
       <LaunchSection />
-      <ArchitectureSection />
+      <TransitionsSection />
       <FinalCtaSection />
     </main>
   );

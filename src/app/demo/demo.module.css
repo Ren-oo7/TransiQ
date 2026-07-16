@@ -1,0 +1,50 @@
+.hero { position: relative; overflow: hidden; background: linear-gradient(135deg, #061427, #08213e 55%, #0b4f79); color: white; }
+.heroBg { position: absolute; inset: 0; background-position: center; background-size: cover; filter: grayscale(1); opacity: .1; }
+.heroGrid { position: relative; display: grid; gap: 44px; align-items: center; }
+.heroCopy h1 { max-width: 760px; margin: 0 0 18px; color: white; font-size: clamp(2.6rem, 4.8vw, 4.7rem); line-height: 1; letter-spacing: -.055em; text-wrap: balance; }
+.heroCopy > p:not(:first-child) { max-width: 64ch; margin: 0; color: rgba(255,255,255,.76); font-size: 1.08rem; line-height: 1.7; }
+.heroActions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.heroActions :global(.buttonSecondary) { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: white; }
+.experienceCard { padding: 28px; border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.09); box-shadow: none; backdrop-filter: blur(14px); }
+.experienceCard h3 { margin: 0 0 18px; color: white; }
+.experienceOptions { display: grid; gap: 10px; }
+.experienceOptions button { padding: 14px 16px; border: 1px solid rgba(255,255,255,.14); border-radius: 12px; background: rgba(255,255,255,.07); color: rgba(255,255,255,.78); cursor: pointer; font: inherit; font-weight: 750; text-align: left; }
+.experienceOptions button:hover, .experienceOptions .activeExperience { border-color: rgba(84,226,203,.55); background: rgba(84,226,203,.15); color: white; }
+.experienceResult { margin-top: 16px; padding: 17px; border-radius: 14px; background: rgba(4,20,36,.48); }
+.experienceResult strong { color: var(--color-accent-soft); }
+.experienceResult p { margin: 7px 0 0; color: rgba(255,255,255,.72); line-height: 1.5; }
+.demoSection { background: linear-gradient(180deg, #f8fbfe, #eef4fa); }
+.formGrid { display: grid; gap: 24px; align-items: stretch; }
+.demoForm, .resultPanel { padding: clamp(24px,4vw,38px); }
+.demoForm h2 { margin: 0 0 26px; color: var(--color-primary-strong); }
+.formRow { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-bottom: 16px; }
+.demoForm label { display: grid; gap: 7px; color: var(--color-primary-strong); font-size: .88rem; font-weight: 800; }
+.demoForm input, .demoForm select { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid var(--color-line); border-radius: 11px; background: #fbfdff; color: var(--color-text); font: inherit; }
+.demoForm > :global(.button) { width: 100%; margin-top: 8px; }
+.resultPanel { min-height: 100%; background: linear-gradient(145deg,#08213e,#0b4f79); color: white; }
+.resultPanel h3 { margin: 0 0 16px; color: white; }
+.resultPanel p { color: rgba(255,255,255,.72); line-height: 1.6; }
+.resultPanel strong { color: white; }
+.score { display: grid; width: 118px; height: 118px; margin: 22px 0; place-items: center; border: 10px solid rgba(84,226,203,.24); border-radius: 50%; background: rgba(255,255,255,.06); }
+.score strong { font-size: 1.7rem; }
+.generatedResult p { margin: 10px 0; }
+.aiSection { background: white; }
+.aiGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.aiCard { padding: 28px; }
+.aiCard h3 { margin: 0 0 10px; color: var(--color-primary-strong); }
+.aiCard p { margin: 0; color: var(--color-muted); line-height: 1.6; }
+.comparisonSection { background: linear-gradient(135deg,#061427,#0a314e); }
+.comparisonSection :global(.sectionHeading h2) { color: white; }
+.tableCard { overflow: hidden; padding: 0; border-color: rgba(255,255,255,.12); }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 19px 22px; border-bottom: 1px solid rgba(8,33,62,.1); text-align: left; }
+.table th { background: #edf5fa; color: var(--color-primary); font-size: .75rem; letter-spacing: .07em; text-transform: uppercase; }
+.table td:first-child { color: var(--color-primary-strong); font-weight: 800; }
+.table tbody tr:last-child td { border-bottom: 0; }
+.finalCta { position: relative; isolation: isolate; overflow: hidden; background: linear-gradient(135deg,#0a4166,#087ca2); color: white; text-align: center; }
+.finalCtaBg { position: absolute; z-index: -1; inset: 0; background: url('/imagenes/Genericas/eqa (1).webp') center / cover; filter: grayscale(.4); opacity: .28; }
+.finalCta h2 { max-width: 850px; margin: 0 auto 16px; color: white; font-size: clamp(2.2rem,4vw,3.8rem); letter-spacing: -.05em; }
+.finalCta p { margin: 0; color: rgba(255,255,255,.76); font-size: 1.08rem; }
+@media (min-width:980px) { .heroGrid { grid-template-columns: minmax(0,1.25fr) minmax(350px,.75fr); } .formGrid { grid-template-columns: minmax(0,1.35fr) minmax(300px,.65fr); } }
+@media (max-width:760px) { .aiGrid { grid-template-columns: 1fr; } .tableCard { overflow-x: auto; } .table { min-width: 680px; } }
+@media (max-width:640px) { .heroActions, .heroActions :global(.button) { width: 100%; } .formRow { grid-template-columns: 1fr; } }

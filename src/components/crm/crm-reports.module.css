@@ -13,8 +13,53 @@
 .highlightCard,
 .metricCard,
 .funnelCard,
-.panelCard {
+.panelCard,
+.reportFilter {
   padding: 24px;
+}
+
+.reportFilter {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 20px 24px;
+  border-color: rgba(131, 151, 173, 0.14);
+  box-shadow: 0 10px 26px rgba(8, 33, 62, 0.045);
+}
+
+.reportFilter > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.reportFilter p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.ownerSelector {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+}
+
+.ownerSelector label {
+  display: grid;
+  gap: 6px;
+  color: var(--color-text);
+  font-weight: 800;
+}
+
+.ownerSelector select {
+  min-width: min(300px, 42vw);
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(131, 151, 173, 0.22);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--color-text);
+  font: inherit;
 }
 
 .heroCard,
@@ -24,6 +69,8 @@
 .panelCard {
   display: grid;
   gap: 12px;
+  border-color: rgba(131, 151, 173, 0.14);
+  box-shadow: 0 10px 26px rgba(8, 33, 62, 0.045);
 }
 
 .heroCard h1,
@@ -131,6 +178,13 @@
 
 .dualGrid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.panelCard {
+  align-content: start;
+  align-self: start;
+  min-width: 0;
 }
 
 .sectionHeader {
@@ -162,6 +216,7 @@
   padding: 16px;
   border-radius: 16px;
   background: #f6fafd;
+  border: 1px solid rgba(131, 151, 173, 0.08);
 }
 
 .stageRow,
@@ -184,6 +239,17 @@
 .ownerList li div {
   display: grid;
   gap: 4px;
+}
+
+.ownerDetail {
+  justify-items: end;
+}
+
+.ownerDetail a {
+  color: #0b4f79;
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-decoration: none;
 }
 
 .progressMeta span {
@@ -247,6 +313,26 @@
   .ownerList li {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .reportFilter {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ownerSelector {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ownerSelector select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .ownerDetail {
+    justify-items: start;
   }
 }
 

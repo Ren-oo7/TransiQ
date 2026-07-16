@@ -1,228 +1,190 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { resources } from "@/data/site-content";
-import { standards } from "@/data/diagnostic-content";
-import {
-  computeDiagnostic,
-  createInitialAnswers,
-  createInitialOrgData,
-  type OrgData,
-} from "@/lib/diagnostic-engine";
+import { buildAttributedHref } from "@/lib/lead-attribution";
 import styles from "./recursos.module.css";
 
-type ResourceItem = {
-  title: string;
-  description: string;
-};
+const quickNeeds = [
+  {
+    title: "Prepararme para ISO 9001:2026",
+    resultTitle: "ISO 9001:2026",
+    result: "Checklist de transición + guía ejecutiva + diagnóstico de madurez.",
+  },
+  {
+    title: "Tengo auditoría próxima",
+    resultTitle: "Auditoría próxima",
+    result: "Checklist de evidencias críticas + readiness digital.",
+  },
+  {
+    title: "Integrar varias normas",
+    resultTitle: "Sistema integrado",
+    result: "Mapa de requisitos comunes + matriz multinorma.",
+  },
+];
+
+const countries = [
+  "México", "Estados Unidos", "Canadá", "República Dominicana", "Colombia", "Ecuador", "Chile", "Brasil / Brazil",
+  "Paraguay", "Perú", "Argentina", "Uruguay", "Costa Rica", "Panamá", "España", "Francia", "Italia", "Alemania",
+  "Portugal", "Reino Unido", "China", "Japón / Japan", "India", "Corea del Sur", "Singapur", "Otro país",
+];
+
+const norms = [
+  "ISO 9001:2015 → ISO 9001:2026",
+  "ISO 14001:2015 → ISO 14001:2026",
+  "ISO 45001:2018 → fortalecimiento / futura versión",
+  "ISO 37001:2016 → ISO 37001:2025",
+  "ISO/IEC 27001:2022",
+  "ISO 22301",
+  "ISO 22000 / HACCP",
+  "ISO 50001",
+  "ISO 13485",
+  "ISO/IEC 42001",
+  "Sistema Integrado ISO 9001 + 14001 + 45001",
+  "Multinorma personalizada",
+];
+
+const profiles = ["Alta Dirección", "Calidad", "Ambiental / HSE", "SST", "TI / Seguridad", "Cumplimiento / Legal", "Consultor ISO", "Auditor interno"];
+const urgencies = ["Crítica: 0 a 30 días", "Alta: 1 a 3 meses", "Media: 3 a 6 meses", "Planeada: 6 a 12 meses", "Exploratoria"];
+
+const library = [
+  { tag: "Checklist", title: "Checklist de transición ISO 2026", description: "Liderazgo, riesgos, documentos, evidencias, auditoría interna e indicadores.", action: "Usar checklist", href: "/diagnostico" },
+  { tag: "Guía", title: "Guía para Alta Dirección", description: "Riesgos ejecutivos, decisiones clave, ruta de 90 días y seguimiento.", action: "Ver guía", href: "/demo" },
+  { tag: "Matriz", title: "Matriz de brechas por norma", description: "Impacto, criticidad, evidencias, procesos responsables y acciones.", action: "Explorar matrices", href: "/soluciones" },
+  { tag: "Webinar", title: "Preparación por norma", description: "9001, 14001, 45001, 37001, 27001 y Sistemas Integrados.", action: "Solicitar calendario", href: "/contacto" },
+  { tag: "Calculadora", title: "Madurez ISO", description: "Evalúa score, urgencia, complejidad y ruta recomendada.", action: "Calcular madurez", href: "/diagnostico" },
+  { tag: "Kit consultor", title: "Kit de diagnóstico para clientes", description: "Reportes, plantillas y rutas para administrar múltiples organizaciones.", action: "Ver demo", href: "/demo" },
+];
+
+const organicBlocks = [
+  { title: "SEO", text: "Páginas por norma, país y necesidad." },
+  { title: "Compartir", text: "Texto listo para LinkedIn y WhatsApp." },
+  { title: "Invitar", text: "Expansión interna dentro de la empresa." },
+  { title: "Nutrir", text: "Correo, webinar, demo y diagnóstico." },
+];
 
 export default function RecursosPage() {
-  const [activeResource, setActiveResource] = useState<ResourceItem | null>(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [company, setCompany] = useState("");
-  const [standard, setStandard] = useState("qms");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [activeNeed, setActiveNeed] = useState(0);
+  const [recommendation, setRecommendation] = useState<{ norm: string; country: string; urgency: string } | null>(null);
 
-  function getBadge(title: string) {
-    if (title.toLowerCase().includes("checklist")) {
-      return { label: "Guía", className: `${styles.badge} ${styles.guideBadge}` };
-    }
-    if (title.toLowerCase().includes("webinar")) {
-      return { label: "Webinar", className: `${styles.badge} ${styles.webinarBadge}` };
-    }
-    return { label: "Ebook", className: `${styles.badge} ${styles.ebookBadge}` };
-  }
-
-  async function handleDownloadSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-
-    if (!name.trim() || !email.trim() || !company.trim()) {
-      setError("Por favor, completa todos los campos requeridos.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Prepare a mock OrgData object
-    const org: OrgData = {
-      ...createInitialOrgData(),
-      company: company.trim(),
-      contact: email.trim(),
-      standard: standard,
-      interest: "Capacitacion",
-    };
-
-    // Calculate a mock state to pass to lead store
-    const emptyAnswers = createInitialAnswers(standard);
-    const state = computeDiagnostic(org, emptyAnswers);
-
-    try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          org,
-          answers: emptyAnswers,
-          state,
-          source: `Descarga de recurso: ${activeResource?.title}`,
-          notes: `Nombre del prospecto: ${name.trim()}\nCorreo capturado: ${email.trim()}\nDescargó el recurso comercial: "${activeResource?.title}"`,
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.error || "Hubo un problema al registrar la descarga.");
-        return;
-      }
-
-      setDownloadSuccess(true);
-    } catch {
-      setError("No se pudo procesar tu descarga. Inténtalo de nuevo.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  function closeModal() {
-    setActiveResource(null);
-    setName("");
-    setEmail("");
-    setCompany("");
-    setDownloadSuccess(false);
-    setError("");
+  function handleRecommendation(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setRecommendation({
+      norm: String(form.get("norm") || norms[0]),
+      country: String(form.get("country") || countries[0]),
+      urgency: String(form.get("urgency") || urgencies[0]),
+    });
   }
 
   return (
     <main>
       <section className={`section ${styles.hero}`}>
         <div className={styles.heroBg} style={{ backgroundImage: "url('/imagenes/Genericas/eqa (2).webp')" }} />
-        <div className={`shell ${styles.heroCopy}`}>
-          <p className="eyebrow sectionEyebrow">Biblioteca de Valor</p>
-          <h1>Recursos para liderar tu transición ISO</h1>
-          <p>
-            Accede a guías ejecutivas, listas de verificación y herramientas metodológicas preparadas por expertos de ISOsolutions para asegurar el éxito en tu sistema de gestión.
-          </p>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="shell">
-          <div className={styles.grid}>
-            {resources.map((resource) => {
-              const badgeInfo = getBadge(resource.title);
-              return (
-                <article key={resource.title} className={styles.card}>
-                  <span className={badgeInfo.className}>{badgeInfo.label}</span>
-                  <h2>{resource.title}</h2>
-                  <p>{resource.description}</p>
-                  <button
-                    className="button buttonPrimary"
-                    type="button"
-                    onClick={() => setActiveResource(resource)}
-                  >
-                    Descargar recurso gratis
-                  </button>
-                </article>
-              );
-            })}
+        <div className={`shell ${styles.heroGrid}`}>
+          <div className={styles.heroCopy}>
+            <p className="eyebrow sectionEyebrow">Knowledge Lab</p>
+            <h1>Recursos ISO personalizados, no descargas genéricas.</h1>
+            <p>TransiQ recomienda checklists, guías, matrices y webinars según norma, país, sector, perfil y urgencia. Cada recurso abre un siguiente paso: diagnóstico, demo, matriz o plan.</p>
+            <div className={styles.heroActions}>
+              <a className="button buttonPrimary" href="#recurso">Encontrar recurso</a>
+              <Link className="button buttonSecondary" href={buildAttributedHref("/diagnostico", { canal: "recursos-hero" })}>Iniciar diagnóstico</Link>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Modal de descarga */}
-      {activeResource && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeBtn} onClick={closeModal}>✕</button>
-
-            {!downloadSuccess ? (
-              <>
-                <div className={styles.modalHeader}>
-                  <p className="eyebrow">Descarga gratuita</p>
-                  <h3>{activeResource.title}</h3>
-                </div>
-
-                {error && <div className={styles.error}>{error}</div>}
-
-                <form className={styles.modalForm} onSubmit={handleDownloadSubmit}>
-                  <label className={styles.field}>
-                    Nombre completo *
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Tu nombre"
-                      required
-                    />
-                  </label>
-
-                  <label className={styles.field}>
-                    Correo electrónico corporativo *
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="ejemplo@empresa.com"
-                      required
-                    />
-                  </label>
-
-                  <label className={styles.field}>
-                    Empresa *
-                    <input
-                      type="text"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      placeholder="Nombre de tu organización"
-                      required
-                    />
-                  </label>
-
-                  <label className={styles.field}>
-                    Norma ISO de interés
-                    <select value={standard} onChange={(e) => setStandard(e.target.value)}>
-                      {Object.entries(standards).map(([key, std]) => (
-                        <option key={key} value={key}>
-                          {std.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <div className={styles.modalActions}>
-                    <button
-                      className="button buttonPrimary downloadBtn"
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Procesando..." : "Obtener descarga gratis"}
-                    </button>
-                  </div>
-                </form>
-              </>
-            ) : (
-              <div className={styles.modalSuccess}>
-                <span className={styles.successIcon}>✓</span>
-                <h4>¡Registro completado!</h4>
-                <p>
-                  El recurso <b>&ldquo;{activeResource.title}&rdquo;</b> se ha enviado directamente a tu correo electrónico. Revisa tu bandeja de entrada o spam.
-                </p>
-                <button
-                  className="button buttonSecondary downloadBtn"
-                  type="button"
-                  onClick={closeModal}
-                >
-                  Cerrar
+          <aside className={`cardSurface ${styles.needCard}`}>
+            <h3>¿Qué necesitas?</h3>
+            <div className={styles.needOptions}>
+              {quickNeeds.map((item, index) => (
+                <button key={item.title} type="button" className={index === activeNeed ? styles.activeNeed : ""} onClick={() => setActiveNeed(index)}>
+                  {item.title}
                 </button>
-              </div>
-            )}
+              ))}
+            </div>
+            <div className={styles.needResult}>
+              <strong>{quickNeeds[activeNeed].resultTitle}</strong>
+              <p>{quickNeeds[activeNeed].result}</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="recurso" className={`section ${styles.personalizationSection}`}>
+        <div className={`shell ${styles.formGrid}`}>
+          <form className={`cardSurface ${styles.resourceForm}`} onSubmit={handleRecommendation}>
+            <p className="eyebrow sectionEyebrow">Personaliza tu recurso</p>
+            <h2>Recibe la herramienta correcta.</h2>
+            <div className={styles.formRow}>
+              <label>Nombre<input name="name" placeholder="Nombre" /></label>
+              <label>Empresa<input name="company" placeholder="Empresa" /></label>
+            </div>
+            <div className={styles.formRow}>
+              <label>País<select name="country">{countries.map((country) => <option key={country}>{country}</option>)}</select></label>
+              <label>Norma<select name="norm">{norms.map((norm) => <option key={norm}>{norm}</option>)}</select></label>
+            </div>
+            <div className={styles.formRow}>
+              <label>Perfil<select name="profile">{profiles.map((profile) => <option key={profile}>{profile}</option>)}</select></label>
+              <label>Urgencia<select name="urgency">{urgencies.map((urgency) => <option key={urgency}>{urgency}</option>)}</select></label>
+            </div>
+            <button className="button buttonPrimary" type="submit">Recibir recomendación de recurso</button>
+          </form>
+
+          <aside className={`cardSurface ${styles.resultPanel}`}>
+            <h3>{recommendation ? "Resultado preliminar automático" : "Recomendación automática"}</h3>
+            {recommendation ? (
+              <>
+                <p><strong>Norma:</strong> {recommendation.norm}</p>
+                <p><strong>País:</strong> {recommendation.country}</p>
+                <p><strong>Urgencia:</strong> {recommendation.urgency}</p>
+              </>
+            ) : <p>El sistema sugerirá recurso, ruta y siguiente acción.</p>}
+          </aside>
+        </div>
+      </section>
+
+      <section className={`section ${styles.librarySection}`}>
+        <div className="shell">
+          <div className="sectionHeading">
+            <h2>Biblioteca por intención de búsqueda.</h2>
+            <p>Contenido útil, específico y compartible para captar tráfico orgánico.</p>
+          </div>
+          <div className={styles.grid}>
+            {library.map((resource) => (
+              <article key={resource.title} className={styles.card}>
+                <span className={styles.badge}>{resource.tag}</span>
+                <h3>{resource.title}</h3>
+                <p>{resource.description}</p>
+                <Link className={styles.textLink} href={buildAttributedHref(resource.href, { canal: "biblioteca-recursos" })}>{resource.action}</Link>
+              </article>
+            ))}
           </div>
         </div>
-      )}
+      </section>
+
+      <section className={`section ${styles.organicSection}`}>
+        <div className="shell">
+          <div className="sectionHeading">
+            <h2>Motor orgánico.</h2>
+            <p>Cada recurso debe tener URL propia, PDF con QR, CTA a diagnóstico, opción de compartir e invitación al equipo.</p>
+          </div>
+          <div className={styles.organicGrid}>
+            {organicBlocks.map((block) => (
+              <article key={block.title} className={`cardSurface ${styles.organicCard}`}>
+                <h3>{block.title}</h3>
+                <p>{block.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={`section ${styles.finalCta}`}>
+        <div className={styles.finalCtaBg} />
+        <div className="shell">
+          <h2>El recurso correcto debe llevar al siguiente paso correcto.</h2>
+          <p>Empieza con un checklist, continúa con diagnóstico y activa una ruta automática.</p>
+        </div>
+      </section>
     </main>
   );
 }

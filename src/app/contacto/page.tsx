@@ -1,105 +1,129 @@
-import { Suspense } from "react";
-import { InteractiveForm } from "@/components/shared/interactive-form";
-import styles from "@/styles/form-page.module.css";
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { buildAttributedHref } from "@/lib/lead-attribution";
+import styles from "./contacto.module.css";
+
+const flow = [
+  { number: "01", title: "Captura IA", text: "Datos clave de país, norma, sector y urgencia." },
+  { number: "02", title: "Ruta automática", text: "Diagnóstico, demo, recurso o plan." },
+  { number: "03", title: "Escalamiento opcional", text: "Especialista solo cuando corresponde." },
+];
+
+const countries = [
+  "México", "Estados Unidos", "Canadá", "República Dominicana", "Colombia", "Ecuador", "Chile", "Brasil / Brazil",
+  "Paraguay", "Perú", "Argentina", "Uruguay", "Costa Rica", "Panamá", "España", "Francia", "Italia", "Alemania",
+  "Portugal", "Reino Unido", "China", "Japón / Japan", "India", "Corea del Sur", "Singapur", "Otro país",
+];
+
+const norms = [
+  "ISO 9001:2015 → ISO 9001:2026", "ISO 14001:2015 → ISO 14001:2026", "ISO 45001:2018 → fortalecimiento / futura versión",
+  "ISO 37001:2016 → ISO 37001:2025", "ISO/IEC 27001:2022", "ISO 22301", "ISO 22000 / HACCP", "ISO 50001",
+  "ISO 13485", "ISO/IEC 42001", "Sistema Integrado ISO 9001 + 14001 + 45001", "Multinorma personalizada",
+];
+
+const urgencies = ["Crítica: 0 a 30 días", "Alta: 1 a 3 meses", "Media: 3 a 6 meses", "Planeada: 6 a 12 meses", "Exploratoria"];
+
+const channels = [
+  { title: "México", text: "Mercado local, corporativo, gobierno y sectores regulados." },
+  { title: "LATAM", text: "RD, Colombia, Ecuador, Chile, Brasil, Paraguay y Perú." },
+  { title: "Europa", text: "España, Francia, Italia y otros mercados." },
+  { title: "Asia", text: "China, Japón, India y mercados estratégicos." },
+];
+
+type ContactRoute = { title: string; description: string };
 
 export default function ContactoPage() {
+  const [route, setRoute] = useState<ContactRoute | null>(null);
+
+  function handleContact(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const sites = Number(form.get("sites") || 1);
+    const norm = String(form.get("norm") || norms[0]);
+    const urgency = String(form.get("urgency") || urgencies[0]);
+    const specialist = sites > 2 || norm.includes("Multinorma") || norm.includes("Sistema Integrado");
+    setRoute(specialist
+      ? { title: "Escalamiento opcional", description: "Tu contexto puede beneficiarse de un especialista por su alcance multinorma, multisitio o complejidad." }
+      : urgency.startsWith("Crítica")
+        ? { title: "Diagnóstico prioritario", description: "La ruta recomendada inicia con diagnóstico y priorización de brechas." }
+        : { title: "Ruta automática", description: "La recomendación inicial es continuar con diagnóstico, recurso o demo autónoma." });
+  }
+
   return (
     <main>
-      <section className={styles.hero}>
-        <div 
-          className={styles.heroBg} 
-          style={{ backgroundImage: "url('/imagenes/Genericas/eqa (2).webp')" }} 
-        />
-        <div className={styles.heroCopy}>
-          <p className="eyebrow" style={{ color: "var(--color-accent-soft)" }}>Canales Directos</p>
-          <h1>Ponte en contacto con nuestro equipo</h1>
-          <p>
-            Estamos listos para apoyarte a estructurar y automatizar tu plan de certificación e implementación de normas ISO.
-          </p>
+      <section className={`section ${styles.hero}`}>
+        <div className={styles.heroBg} style={{ backgroundImage: "url('/imagenes/Genericas/eqa (2).webp')" }} />
+        <div className={`shell ${styles.heroGrid}`}>
+          <div className={styles.heroCopy}>
+            <p className="eyebrow sectionEyebrow">Contacto inteligente</p>
+            <h1>Contacto solo cuando agrega valor. La ruta inicia automáticamente.</h1>
+            <p>TransiQ primero interpreta tu contexto, recomienda una acción y permite avanzar. El contacto humano queda para proyectos estratégicos, multinorma, multisitio o complejos.</p>
+            <div className={styles.heroActions}>
+              <a className="button buttonPrimary" href="#contacto">Enviar contexto</a>
+              <Link className="button buttonSecondary" href={buildAttributedHref("/diagnostico", { canal: "contacto-hero" })}>Preferir diagnóstico</Link>
+            </div>
+          </div>
+
+          <aside className={`cardSurface ${styles.flowPanel}`}>
+            <h3>Flujo sin dependencia comercial inicial</h3>
+            <div className={styles.flowList}>
+              {flow.map((item) => (
+                <article key={item.number} className={styles.flowCard}>
+                  <span>{item.number}</span><div><h3>{item.title}</h3><p>{item.text}</p></div>
+                </article>
+              ))}
+            </div>
+          </aside>
         </div>
       </section>
 
-      <section className={styles.formSection}>
+      <section id="contacto" className={`section ${styles.contactSection}`}>
+        <div className={`shell ${styles.formGrid}`}>
+          <form className={`cardSurface ${styles.contactForm}`} onSubmit={handleContact}>
+            <p className="eyebrow sectionEyebrow">Solicitud ejecutiva</p>
+            <h2>Comparte tu contexto.</h2>
+            <div className={styles.formRow}>
+              <label>Empresa<input name="company" placeholder="Empresa" /></label>
+              <label>País<select name="country">{countries.map((country) => <option key={country}>{country}</option>)}</select></label>
+            </div>
+            <div className={styles.formRow}>
+              <label>Norma<select name="norm">{norms.map((norm) => <option key={norm}>{norm}</option>)}</select></label>
+              <label>Urgencia<select name="urgency">{urgencies.map((urgency) => <option key={urgency}>{urgency}</option>)}</select></label>
+            </div>
+            <div className={styles.formRow}>
+              <label>Empleados<input name="employees" type="number" defaultValue="80" /></label>
+              <label>Sitios<input name="sites" type="number" defaultValue="1" /></label>
+            </div>
+            <label>Mensaje<textarea name="message" rows={4} placeholder="Describe brevemente tu necesidad" /></label>
+            <button className="button buttonPrimary" type="submit">Generar ruta de contacto</button>
+          </form>
+
+          <aside className={`cardSurface ${styles.routePanel}`}>
+            <h3>Ruta de contacto</h3>
+            {route ? <div className={styles.routeResult}><span>✓</span><h4>{route.title}</h4><p>{route.description}</p></div> : <p>Si el caso no requiere especialista, se recomendará diagnóstico, recurso o demo autónoma.</p>}
+          </aside>
+        </div>
+      </section>
+
+      <section className={`section ${styles.channelsSection}`}>
         <div className="shell">
-          <div className={styles.splitGrid}>
-            
-            {/* Columna Izquierda: Información de Contacto integrada en tarjeta */}
-            <div className={styles.infoColumn}>
-              <div className={styles.infoText}>
-                <h3>Asesoría y Soporte Especializado</h3>
-                <p>
-                  Nuestro equipo de consultores y auditores ISO te guiará durante todo el proceso de diagnóstico y maduración digital con la plataforma TransiQ.
-                </p>
-              </div>
-
-              {/* Tarjeta de Ubicación con Portada de Auditoría Integrada */}
-              <div className={styles.locationCard}>
-                <div className={styles.locationCover} />
-                <div className={styles.locationBody}>
-                  <div className={styles.detailItem}>
-                    <div className={styles.iconWrapper}>📍</div>
-                    <div className={styles.itemText}>
-                      <span className={styles.itemLabel}>Dirección Corporativa</span>
-                      <span className={styles.itemVal}>Paseo de la Reforma 222, Colonia Juárez, Delegación Cuauhtémoc, Ciudad de México, CP 06600</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.detailItem}>
-                    <div className={styles.iconWrapper}>📞</div>
-                    <div className={styles.itemText}>
-                      <span className={styles.itemLabel}>Líneas de Atención</span>
-                      <span className={styles.itemVal}>+52 (55) 4123-4567 | +52 (55) 8901-2345</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.detailItem}>
-                    <div className={styles.iconWrapper}>✉️</div>
-                    <div className={styles.itemText}>
-                      <span className={styles.itemLabel}>Correo Electrónico</span>
-                      <span className={styles.itemVal}>contacto@isosolutions.com | soporte@transiq.com</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.detailItem}>
-                    <div className={styles.iconWrapper}>🌐</div>
-                    <div className={styles.itemText}>
-                      <span className={styles.itemLabel}>Redes Sociales</span>
-                      <div className={styles.socials}>
-                        <a href="https://linkedin.com" target="_blank" rel="noreferrer" className={styles.socialLink}>in</a>
-                        <a href="https://twitter.com" target="_blank" rel="noreferrer" className={styles.socialLink}>𝕏</a>
-                        <a href="https://facebook.com" target="_blank" rel="noreferrer" className={styles.socialLink}>f</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Columna Derecha: Formulario interactivo */}
-            <div className={styles.formContainer}>
-              <Suspense fallback={
-                <div className="cardSurface" style={{ padding: 40, display: "grid", placeItems: "center" }}>
-                  <p className="eyebrow">Cargando formulario...</p>
-                </div>
-              }>
-                <InteractiveForm source="Formulario de contacto" defaultInterest="Certificación" />
-              </Suspense>
-            </div>
-            
+          <div className="sectionHeading">
+            <h2>Canales globales.</h2>
+            <p>Preparado para México, LATAM, Estados Unidos, Europa, Asia, India y operación internacional.</p>
+          </div>
+          <div className={styles.channelsGrid}>
+            {channels.map((channel) => <article key={channel.title} className={`cardSurface ${styles.channelCard}`}><h3>{channel.title}</h3><p>{channel.text}</p></article>)}
           </div>
         </div>
+      </section>
 
-        {/* Sección Inferior del Mapa: A todo el ancho y pegada al footer */}
-        <div className={styles.fullWidthMap}>
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.539591461947!2d-99.1675846850933!3d19.427024486888496!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff35f5bd156d%3A0x6b44ab4f5cfd71c4!2sPaseo%20de%20la%20Reforma%2C%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1659900000000!5m2!1ses!2smx"
-            width="100%" 
-            height="100%" 
-            style={{ border: 0, display: "block" }} 
-            allowFullScreen={true} 
-            loading="lazy"
-            title="Mapa de oficinas TransiQ"
-          />
+      <section className={`section ${styles.finalCta}`}>
+        <div className={styles.finalCtaBg} />
+        <div className="shell">
+          <h2>Evita la bandeja genérica.</h2>
+          <p>Convierte tu solicitud en una ruta automática y accionable.</p>
         </div>
       </section>
     </main>

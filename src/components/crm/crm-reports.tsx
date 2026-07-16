@@ -6,6 +6,7 @@ import styles from "./crm-reports.module.css";
 type CrmReportsProps = {
   leads: SavedLead[];
   session: AdminSession;
+  selectedOwner: string;
 };
 
 function formatPercent(value: number) {
@@ -27,7 +28,7 @@ function getSourceFamily(source: string) {
   if (normalized.includes("solicitud de demo")) return "Demo";
   if (normalized.includes("formulario de contacto")) return "Contacto";
   if (normalized.includes("solucion-")) return "Página por norma";
-  if (normalized.includes("header") || normalized.includes("footer") || normalized.includes("navegacion")) return "Navegación";
+  if (normalized.includes("header") || normalized.includes("footer") || normalized.includes("navegacion")) return "Accesos generales del sitio";
   if (normalized.includes("hero-principal") || normalized.includes("bloque-") || normalized.includes("cta-final")) return "Home";
   if (normalized.includes("diagnóstico público") || normalized.includes("diagnostico público")) return "Diagnóstico";
   return "Otros";
@@ -40,39 +41,40 @@ function getStageClass(stage: SavedLead["status"]) {
   return styles.stageNew;
 }
 
-export function CrmReports({ leads, session }: CrmReportsProps) {
-  const totalLeads = leads.length;
-  const openLeads = leads.filter((lead) => lead.status !== "Cerrado").length;
-  const strategicLeads = leads.filter((lead) => lead.diagnostic.lead.score >= 70).length;
-  const proposalLeads = leads.filter((lead) => ["Propuesta enviada", "Cerrado"].includes(lead.status)).length;
-  const demoLeads = leads.filter((lead) => ["Demo agendada", "Propuesta enviada", "Cerrado"].includes(lead.status)).length;
-  const closedLeads = leads.filter((lead) => lead.status === "Cerrado").length;
-  const overdueFollowUps = leads.filter((lead) => {
+export function CrmReports({ leads, session, selectedOwner }: CrmReportsProps) {
+  const ownerOptions = Array.from(new Set(leads.map((lead) => lead.owner || "Sin asignar"))).sort();
+  const reportLeads = selectedOwner ? leads.filter((lead) => lead.owner === selectedOwner) : leads;
+  const totalLeads = reportLeads.length;
+  const openLeads = reportLeads.filter((lead) => lead.status !== "Cerrado").length;
+  const proposalLeads = reportLeads.filter((lead) => ["Propuesta enviada", "Cerrado"].includes(lead.status)).length;
+  const demoLeads = reportLeads.filter((lead) => ["Demo agendada", "Propuesta enviada", "Cerrado"].includes(lead.status)).length;
+  const closedLeads = reportLeads.filter((lead) => lead.status === "Cerrado").length;
+  const overdueFollowUps = reportLeads.filter((lead) => {
     if (lead.status === "Cerrado" || !lead.nextFollowUpAt) return false;
     return new Date(`${lead.nextFollowUpAt}T00:00:00`).getTime() < new Date(new Date().toDateString()).getTime();
   }).length;
-  const highPriorityOpen = leads.filter((lead) => lead.status !== "Cerrado" && lead.priority === "Alta").length;
+  const highPriorityOpen = reportLeads.filter((lead) => lead.status !== "Cerrado" && lead.priority === "Alta").length;
 
   const avgMaturity = totalLeads
-    ? Math.round(leads.reduce((sum, lead) => sum + lead.diagnostic.score, 0) / totalLeads)
+    ? Math.round(reportLeads.reduce((sum, lead) => sum + lead.diagnostic.score, 0) / totalLeads)
     : 0;
   const avgLeadScore = totalLeads
-    ? Math.round(leads.reduce((sum, lead) => sum + lead.diagnostic.lead.score, 0) / totalLeads)
+    ? Math.round(reportLeads.reduce((sum, lead) => sum + lead.diagnostic.lead.score, 0) / totalLeads)
     : 0;
 
-  const contactRate = totalLeads ? (leads.filter((lead) => lead.status !== "Nuevo").length / totalLeads) * 100 : 0;
+  const contactRate = totalLeads ? (reportLeads.filter((lead) => lead.status !== "Nuevo").length / totalLeads) * 100 : 0;
   const demoRate = totalLeads ? (demoLeads / totalLeads) * 100 : 0;
   const proposalRate = totalLeads ? (proposalLeads / totalLeads) * 100 : 0;
   const closeRate = totalLeads ? (closedLeads / totalLeads) * 100 : 0;
 
   const stageSummaries = pipelineStages.map((stage) => {
-    const items = leads.filter((lead) => lead.status === stage);
+    const items = reportLeads.filter((lead) => lead.status === stage);
     const share = totalLeads ? (items.length / totalLeads) * 100 : 0;
     return { stage, count: items.length, share };
   });
 
   const familySummaries = Array.from(
-    leads.reduce((map, lead) => {
+    reportLeads.reduce((map, lead) => {
       const family = getSourceFamily(lead.source);
       const current = map.get(family) ?? [];
       current.push(lead);
@@ -113,7 +115,7 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
     .sort((a, b) => b.total - a.total || a.overdue - b.overdue)
     .slice(0, 6);
 
-  const nextActionLeads = [...leads]
+  const nextActionLeads = [...reportLeads]
     .filter((lead) => lead.status !== "Cerrado")
     .sort((a, b) => {
       const aDate = a.nextFollowUpAt ? new Date(`${a.nextFollowUpAt}T00:00:00`).getTime() : Number.MAX_SAFE_INTEGER;
@@ -135,6 +137,7 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
           <div className={styles.chips}>
             <span className={styles.chip}>Responsable activo: {session.name}</span>
             <span className={styles.chip}>Rol: {session.role}</span>
+            <span className={styles.chip}>Reporte: {selectedOwner || "Todo el equipo"}</span>
             <span className={styles.chip}>Leads analizados: {totalLeads}</span>
           </div>
         </article>
@@ -147,6 +150,30 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
         </article>
       </section>
 
+      <section className={`cardSurface ${styles.reportFilter}`} aria-label="Reporte por comercial">
+        <div>
+          <span className="miniLabel">Vista por comercial</span>
+          <strong>{selectedOwner || "Resumen de todo el equipo"}</strong>
+          <p>Selecciona una persona para recalcular todos los indicadores, el embudo, canales y próximas acciones.</p>
+        </div>
+        <form className={styles.ownerSelector} action="/crm/reportes" method="get">
+          <label htmlFor="commercial-report-owner">
+            Comercial
+            <select id="commercial-report-owner" name="comercial" defaultValue={selectedOwner}>
+              <option value="">Todo el equipo</option>
+              {ownerOptions.map((owner) => (
+                <option key={owner} value={owner}>
+                  {owner}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button className="button buttonPrimary" type="submit">
+            Ver reporte
+          </button>
+        </form>
+      </section>
+
       <section className={styles.metricGrid}>
         <article className={`cardSurface ${styles.metricCard}`}>
           <span className="miniLabel">Madurez promedio</span>
@@ -155,7 +182,7 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
         </article>
 
         <article className={`cardSurface ${styles.metricCard}`}>
-          <span className="miniLabel">Lead score promedio</span>
+          <span className="miniLabel">Oportunidad promedio</span>
           <div className={styles.metricValue}>{avgLeadScore}</div>
           <p>Calidad comercial promedio del universo actual de leads.</p>
         </article>
@@ -167,9 +194,9 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
         </article>
 
         <article className={`cardSurface ${styles.metricCard}`}>
-          <span className="miniLabel">Cierre actual</span>
+          <span className="miniLabel">Leads cerrados</span>
           <div className={styles.metricValue}>{formatPercent(closeRate)}</div>
-          <p>Porcentaje del total que ya alcanzó la etapa de cierre.</p>
+          <p>Porcentaje marcado como cerrado, ganado o perdido.</p>
         </article>
       </section>
 
@@ -193,9 +220,9 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
         </article>
 
         <article className={`cardSurface ${styles.funnelCard}`}>
-          <span className="miniLabel">Cierre</span>
+          <span className="miniLabel">Cerrados</span>
           <strong>{formatPercent(closeRate)}</strong>
-          <p>Conversión total del embudo actual.</p>
+          <p>Leads que salieron del pipeline abierto, sin distinguir aún resultado.</p>
         </article>
       </section>
 
@@ -267,7 +294,7 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
               <h2>Desempeño por familia comercial</h2>
             </div>
             <Link className="button buttonSecondary" href="/crm/campanas">
-              Ver campañas
+              Ver canales de captación
             </Link>
           </div>
 
@@ -279,7 +306,7 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
                     <strong>{item.family}</strong>
                     <span>{item.count} leads</span>
                   </div>
-                  <p>Conversión inicial {formatPercent(item.conversion)} · Estratégicos {item.strategic}</p>
+                  <p>Avance inicial {formatPercent(item.conversion)} · Prioritarios {item.strategic}</p>
                   <div className={styles.kpiRow}>
                     <span className={styles.kpiBadge}>Demos {item.demos}</span>
                     <span className={styles.kpiBadge}>Cierres {item.closed}</span>
@@ -308,7 +335,12 @@ export function CrmReports({ leads, session }: CrmReportsProps) {
                     <strong>{item.owner}</strong>
                     <span>{item.total} leads · {item.open} abiertos</span>
                   </div>
-                  <small>{item.closed} cerrados · {item.overdue} vencidos</small>
+                  <div className={styles.ownerDetail}>
+                    <small>{item.closed} cerrados · {item.overdue} vencidos</small>
+                    <Link href={{ pathname: "/crm/reportes", query: { comercial: item.owner } }}>
+                      Ver reporte
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ul>

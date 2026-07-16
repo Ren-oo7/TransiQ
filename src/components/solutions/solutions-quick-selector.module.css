@@ -1,0 +1,104 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  grid-template-areas:
+    "title result"
+    "options result";
+  gap: 18px 28px;
+  padding: 30px;
+  border-color: rgba(12, 134, 199, 0.15);
+  box-shadow: 0 28px 85px rgba(8, 33, 62, 0.16);
+}
+
+.wrapper h3 {
+  grid-area: title;
+  margin: 0 0 16px;
+  color: var(--color-primary-strong);
+}
+
+.options {
+  grid-area: options;
+  display: grid;
+  gap: 10px;
+}
+
+.option {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  background: white;
+  color: var(--color-primary-strong);
+  min-height: 58px;
+  padding: 14px 18px;
+  text-align: left;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.option:hover,
+.optionActive {
+  border-color: var(--color-primary-soft);
+  background: rgba(12, 134, 199, 0.08);
+}
+
+.optionActive {
+  color: white;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-soft));
+  box-shadow: 0 12px 28px rgba(12, 134, 199, 0.2);
+}
+
+.result {
+  grid-area: result;
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin: 0;
+  padding: 30px;
+  border-radius: 22px;
+  border: 1px solid rgba(84, 226, 203, 0.2);
+  background:
+    radial-gradient(circle at 80% 15%, rgba(84, 226, 203, 0.2), transparent 25%),
+    linear-gradient(145deg, #08213e, #0a4166);
+}
+
+.result::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  margin-bottom: auto;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  box-shadow: 0 0 0 9px rgba(84, 226, 203, 0.1);
+}
+
+.result strong {
+  display: block;
+  color: white;
+  font-size: 1.35rem;
+}
+
+.result p {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .wrapper {
+    grid-template-columns: 1fr;
+    grid-template-areas: "title" "options" "result";
+    padding: 20px;
+    border-radius: 22px;
+  }
+  .result { min-height: 210px; padding: 24px; }
+}
+
+.link {
+  display: inline-flex;
+  margin-top: 14px;
+  color: var(--color-primary-soft);
+  font-weight: 800;
+}

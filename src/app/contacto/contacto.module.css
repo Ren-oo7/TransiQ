@@ -1,0 +1,44 @@
+.hero { position: relative; isolation: isolate; overflow: hidden; background: linear-gradient(135deg,#061427,#08213e 55%,#0b4f79); color: white; }
+.heroBg { position: absolute; z-index: -1; inset: 0; background-position: center; background-size: cover; filter: grayscale(1); opacity: .1; }
+.heroGrid { display: grid; gap: 44px; align-items: center; }
+.heroCopy h1 { max-width: 780px; margin: 0 0 18px; color: white; font-size: clamp(2.55rem,4.65vw,4.55rem); line-height: 1; letter-spacing: -.055em; text-wrap: balance; }
+.heroCopy > p:not(:first-child) { max-width: 65ch; margin: 0; color: rgba(255,255,255,.76); font-size: 1.08rem; line-height: 1.7; }
+.heroActions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.heroActions :global(.buttonSecondary) { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: white; }
+.flowPanel { padding: 28px; border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.09); box-shadow: none; backdrop-filter: blur(14px); }
+.flowPanel > h3 { margin: 0 0 18px; color: white; }
+.flowList { display: grid; gap: 10px; }
+.flowCard { display: grid; grid-template-columns: 38px 1fr; gap: 13px; padding: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 13px; background: rgba(255,255,255,.06); }
+.flowCard > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: linear-gradient(135deg,var(--color-accent),var(--color-primary-soft)); color: white; font-size: .7rem; font-weight: 900; }
+.flowCard h3 { margin: 0 0 4px; color: white; font-size: 1rem; }
+.flowCard p { margin: 0; color: rgba(255,255,255,.67); font-size: .88rem; line-height: 1.45; }
+.contactSection { background: linear-gradient(180deg,#f8fbfe,#eef4fa); }
+.formGrid { display: grid; gap: 24px; align-items: stretch; }
+.contactForm,.routePanel { padding: clamp(24px,4vw,38px); }
+.contactForm h2 { margin: 0 0 26px; color: var(--color-primary-strong); }
+.formRow { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-bottom: 16px; }
+.contactForm label { display: grid; gap: 7px; margin-bottom: 16px; color: var(--color-primary-strong); font-size: .88rem; font-weight: 800; }
+.formRow label { margin-bottom: 0; }
+.contactForm input,.contactForm select,.contactForm textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--color-line); border-radius: 11px; background: #fbfdff; color: var(--color-text); font: inherit; }
+.contactForm input,.contactForm select { min-height: 46px; }
+.contactForm textarea { resize: vertical; }
+.contactForm > :global(.button) { width: 100%; margin-top: 2px; }
+.routePanel { position: relative; overflow: hidden; min-height: 100%; background: linear-gradient(145deg,#08213e,#0b4f79); color: white; }
+.routePanel::after { position: absolute; right: -80px; bottom: -80px; width: 230px; height: 230px; border: 1px solid rgba(84,226,203,.2); border-radius: 50%; content: ''; }
+.routePanel h3 { margin: 0 0 16px; color: white; }
+.routePanel p { color: rgba(255,255,255,.72); line-height: 1.6; }
+.routeResult > span { display: grid; width: 54px; height: 54px; margin: 28px 0; place-items: center; border-radius: 50%; background: rgba(84,226,203,.14); color: var(--color-accent-soft); font-size: 1.5rem; }
+.routeResult h4 { margin: 0 0 8px; color: white; font-size: 1.25rem; }
+.channelsSection { background: white; }
+.channelsGrid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; }
+.channelCard { position: relative; min-height: 190px; padding: 26px; overflow: hidden; }
+.channelCard::before { display: block; width: 38px; height: 3px; margin-bottom: 35px; border-radius: 999px; background: linear-gradient(90deg,var(--color-accent),var(--color-primary-soft)); content: ''; }
+.channelCard h3 { margin: 0 0 10px; color: var(--color-primary-strong); }
+.channelCard p { margin: 0; color: var(--color-muted); line-height: 1.6; }
+.finalCta { position: relative; isolation: isolate; overflow: hidden; background: linear-gradient(135deg,#0a4166,#087ca2); color: white; text-align: center; }
+.finalCtaBg { position: absolute; z-index: -1; inset: 0; background: url('/imagenes/Genericas/eqa (4).webp') center / cover; filter: grayscale(.4); opacity: .28; }
+.finalCta h2 { max-width: 850px; margin: 0 auto 16px; color: white; font-size: clamp(2.2rem,4vw,3.8rem); letter-spacing: -.05em; }
+.finalCta p { margin: 0; color: rgba(255,255,255,.76); font-size: 1.08rem; }
+@media (min-width:980px) { .heroGrid { grid-template-columns:minmax(0,1.25fr) minmax(370px,.75fr); } .formGrid { grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr); } }
+@media (max-width:860px) { .channelsGrid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px) { .heroActions,.heroActions :global(.button) { width:100%; } .formRow,.channelsGrid { grid-template-columns:1fr; } }

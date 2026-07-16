@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
   answerOptions,
   standards,
@@ -14,6 +15,7 @@ import {
 } from "@/lib/diagnostic-engine";
 import { buildLeadSource } from "@/lib/lead-attribution";
 import styles from "./public-diagnostic.module.css";
+import { downloadDiagnosticPdf } from "@/lib/diagnostic-pdf";
 
 type AnswerList = string[];
 
@@ -72,6 +74,9 @@ export function PublicDiagnostic() {
 
   function updateOrgField(field: keyof typeof org, value: string) {
     const nextOrg = { ...org, [field]: value };
+    if (field === "email" || field === "phone") {
+      nextOrg.contact = [nextOrg.email, nextOrg.phone].filter(Boolean).join(" | ");
+    }
     if (field === "standard") {
       setOrg(nextOrg);
       setAnswers(createInitialAnswers(value));
@@ -87,8 +92,8 @@ export function PublicDiagnostic() {
   }
 
   function handleStart() {
-    if (!org.company.trim() || !org.contact.trim()) {
-      setValidationError("Por favor, ingresa el nombre de la empresa y un medio de contacto (correo o teléfono) para iniciar.");
+    if (!org.contactName.trim() || !org.company.trim() || !org.email.trim() || !org.phone.trim()) {
+      setValidationError("Por favor, completa nombre, empresa, correo y teléfono para iniciar.");
       return;
     }
     setValidationError("");
@@ -161,19 +166,15 @@ export function PublicDiagnostic() {
     }
   }
 
-  function downloadJson() {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `transiq-diagnostico-${org.company.toLowerCase().replace(/\s+/g, "-")}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-    flashToast("Archivo JSON generado");
-  }
-
-  function printReport() {
-    window.print();
+  async function savePdf(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    try {
+      await downloadDiagnosticPdf(org, state);
+      flashToast("PDF descargado correctamente");
+    } catch {
+      flashToast("No fue posible generar el PDF");
+    }
   }
 
   function flashToast(message: string) {
@@ -187,44 +188,40 @@ export function PublicDiagnostic() {
         <div className={styles.heroBg} style={{ backgroundImage: "url('/imagenes/GAP/GAP (1).webp')" }} />
         <div className="shell">
           <div className={styles.heroCopy}>
-            <p className="eyebrow sectionEyebrow">Evaluación Inteligente ISO</p>
-            <h1>Diagnóstico Ejecutivo de Madurez</h1>
+            <p className="eyebrow sectionEyebrow">ISO Maturity Lab</p>
+            <h1>Evalúa tu madurez ISO y recibe una ruta de acción automática con IA.</h1>
             <p>
-              Completa este sencillo asistente para evaluar el nivel de preparación de tu organización frente a la nueva generación de normas ISO y recibe un reporte preliminar de brechas y plan de acción.
+              TransiQ analiza norma, país, sector, empleados, sitios, alcance y urgencia para entregar score, brechas probables, evidencias requeridas y siguiente paso recomendado.
             </p>
+            <div className={styles.heroActions}>
+              <a className="button buttonPrimary" href="#diagnostico">Iniciar diagnóstico</a>
+              <Link className="button buttonSecondary" href="/demo">Ver ejemplo de dashboard</Link>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section sectionCompact">
+      <section id="diagnostico" className={`section sectionCompact ${styles.diagnosticSection}`}>
         <div className="shell">
           {/* Bloque Introductorio arriba del Diagnóstico */}
           {currentStep === 0 && (
             <div className={styles.introBlock}>
               <div className={styles.introText}>
-                <p className="eyebrow">Diagnóstico de Madurez</p>
-                <h2>Prepara tu transición con precisión</h2>
-                <p className="lead">
-                  Este diagnóstico evalúa tus procesos de gestión actuales frente a las cláusulas clave de la norma ISO seleccionada.
-                  Al completar las preguntas, obtendrás un semáforo de cumplimiento global, matriz de brechas críticas (GAP) y un plan de acción sugerido a 12 meses.
-                </p>
+                <p className="eyebrow sectionEyebrow">Reporte ejecutivo automático</p>
+                <h2>Resultado que recibe el usuario</h2>
                 <ul className={styles.introList}>
-                  <li>Porcentaje de preparación global de tu organización.</li>
-                  <li>Identificación de brechas críticas por cláusula (GAP).</li>
-                  <li>Cronograma de trabajo sugerido a 12 meses.</li>
+                  <li>Porcentaje de madurez.</li>
+                  <li>Semáforo por eje.</li>
+                  <li>Brechas preliminares por norma.</li>
+                  <li>Recursos sugeridos.</li>
+                  <li>Ruta automática de acción.</li>
                 </ul>
-              </div>
-              <div className={styles.introMedia}>
-                <img 
-                  src="/imagenes/GAP/GAP (2).webp" 
-                  alt="Auditoría y Análisis de Brechas" 
-                  className={styles.introImg} 
-                />
               </div>
             </div>
           )}
 
           {/* Stepper visual */}
+          {currentStep >= 1 && currentStep <= 3 ? <p className={`eyebrow sectionEyebrow ${styles.quickStepLabel}`}>Paso 2 · Diagnóstico completo</p> : null}
           <div className={styles.stepper}>
             {/* Lineas de fondo conectadas */}
             <div className={styles.stepperLine}>
@@ -263,35 +260,47 @@ export function PublicDiagnostic() {
             <div className={`cardSurface ${styles.card} ${styles.wizardStepCentered}`}>
               <div className={styles.formTitle}>
                 <div>
-                  <p className="eyebrow sectionEyebrow">Paso 1 de 5</p>
-                  <h2>Datos de la organización</h2>
+                  <p className="eyebrow sectionEyebrow">Paso 1 · Contexto global</p>
+                  <h2>Personaliza tu evaluación.</h2>
                 </div>
-                <span className="statusPill statusNeutral">Seguro y Privado</span>
               </div>
 
               {validationError && <div className={styles.validationError}>{validationError}</div>}
 
               <form className={styles.formGrid} onSubmit={(e) => e.preventDefault()}>
                 <label className={styles.field}>
-                  Empresa *
-                  <input value={org.company} onChange={(event) => updateOrgField("company", event.target.value)} placeholder="Nombre de la organización" required />
+                  Nombre del contacto
+                  <input value={org.contactName} onChange={(event) => updateOrgField("contactName", event.target.value)} placeholder="Nombre completo" required />
+                </label>
+
+                <label className={styles.field}>
+                  Empresa
+                  <input value={org.company} onChange={(event) => updateOrgField("company", event.target.value)} placeholder="Nombre de la empresa" required />
                 </label>
 
                 <label className={styles.field}>
                   País
                   <select value={org.country} onChange={(event) => updateOrgField("country", event.target.value)}>
                     <option value="Mexico">México</option>
-                    <option value="Republica Dominicana">República Dominicana</option>
-                    <option value="Colombia">Colombia</option>
-                    <option value="Ecuador">Ecuador</option>
                     <option value="Estados Unidos">Estados Unidos</option>
-                    <option value="Otro">Otro</option>
+                    <option value="Canada">Canadá</option>
+                    <option value="Republica Dominicana">República Dominicana</option>
+                    <option value="Colombia">Colombia</option><option value="Ecuador">Ecuador</option><option value="Chile">Chile</option>
+                    <option value="Brasil">Brasil / Brazil</option><option value="Paraguay">Paraguay</option><option value="Peru">Perú</option>
+                    <option value="Argentina">Argentina</option><option value="Uruguay">Uruguay</option><option value="Costa Rica">Costa Rica</option><option value="Panama">Panamá</option>
+                    <option value="Espana">España</option><option value="Francia">Francia</option><option value="Italia">Italia</option><option value="Alemania">Alemania</option>
+                    <option value="Portugal">Portugal</option><option value="Reino Unido">Reino Unido</option><option value="China">China</option><option value="Japon">Japón / Japan</option>
+                    <option value="India">India</option><option value="Corea del Sur">Corea del Sur</option><option value="Singapur">Singapur</option><option value="Otro">Otro país</option>
                   </select>
                 </label>
 
                 <label className={styles.field}>
                   Sector
-                  <input value={org.sector} onChange={(event) => updateOrgField("sector", event.target.value)} placeholder="Manufactura, servicios, TI..." />
+                  <select value={org.sector} onChange={(event) => updateOrgField("sector", event.target.value)}>
+                    <option value="Manufactura">Manufactura</option><option value="Construccion">Construcción</option><option value="Logistica y transporte">Logística y transporte</option>
+                    <option value="Alimentos">Alimentos</option><option value="Tecnologia">Tecnología</option><option value="Salud">Salud</option><option value="Gobierno">Gobierno</option>
+                    <option value="Servicios">Servicios</option><option value="Energia">Energía</option><option value="Otro">Otro</option>
+                  </select>
                 </label>
 
                 <label className={styles.field}>
@@ -300,57 +309,60 @@ export function PublicDiagnostic() {
                 </label>
 
                 <label className={styles.field}>
-                  Sitios operativos
+                  Sitios
                   <input type="number" min="1" value={org.sites} onChange={(event) => updateOrgField("sites", event.target.value)} placeholder="1" />
                 </label>
 
                 <label className={styles.field}>
                   Norma objetivo *
                   <select value={org.standard} onChange={(event) => updateOrgField("standard", event.target.value)}>
-                    {Object.entries(standards).map(([key, standard]) => (
-                      <option key={key} value={key}>
-                        {standard.label}
-                      </option>
-                    ))}
+                    <option value="qms">ISO 9001:2015 → ISO 9001:2026</option><option value="ems">ISO 14001:2015 → ISO 14001:2026</option>
+                    <option value="ohs">ISO 45001:2018 → fortalecimiento / futura versión</option><option value="abms">ISO 37001:2016 → ISO 37001:2025</option>
+                    <option value="isms">ISO/IEC 27001:2022 → fortalecimiento SGSI</option>
+                    <option value="integrated">Sistema Integrado ISO 9001 + 14001 + 45001</option>
                   </select>
                 </label>
 
                 <label className={styles.field}>
-                  Urgencia del Proyecto
+                  Urgencia
                   <select value={org.urgency} onChange={(event) => updateOrgField("urgency", event.target.value)}>
-                    <option value="baja">Baja: 6 a 12 meses</option>
-                    <option value="media">Media: 3 a 6 meses</option>
-                    <option value="alta">Alta: 1 a 3 meses</option>
-                    <option value="critica">Crítica: menos de 30 días</option>
+                    <option value="critica">Crítica: 0 a 30 días</option><option value="alta">Alta: 1 a 3 meses</option><option value="media">Media: 3 a 6 meses</option>
+                    <option value="baja">Planeada: 6 a 12 meses</option><option value="exploratoria">Exploratoria</option>
                   </select>
                 </label>
 
                 <label className={styles.field}>
-                  Interés Principal
+                  Situación actual
                   <select value={org.interest} onChange={(event) => updateOrgField("interest", event.target.value)}>
-                    <option value="Diagnostico">Diagnóstico</option>
-                    <option value="Capacitacion">Capacitación</option>
-                    <option value="Auditoria interna">Auditoría interna</option>
-                    <option value="Preauditoria">Preauditoría</option>
-                    <option value="Certificacion">Certificación</option>
-                    <option value="Sistema integrado">Sistema integrado</option>
-                    <option value="Seguimiento mensual">Seguimiento mensual</option>
+                    <option value="Ya estamos certificados">Ya estamos certificados</option><option value="Estamos en implementacion">Estamos en implementación</option>
+                    <option value="Certificacion">Queremos certificar por primera vez</option><option value="Tengo auditoria proxima">Tengo auditoría próxima</option>
+                    <option value="Necesito transicion normativa">Necesito transición normativa</option><option value="Soy consultor ISO">Soy consultor ISO</option>
                   </select>
                 </label>
 
                 <label className={`${styles.field} ${styles.full}`}>
-                  Alcance preliminar del sistema de gestión
+                  Alcance
                   <textarea rows={2} value={org.scope} onChange={(event) => updateOrgField("scope", event.target.value)} placeholder="Actividades o procesos a cubrir" />
                 </label>
 
-                <label className={`${styles.field} ${styles.full}`}>
-                  Contacto corporativo (correo o teléfono) *
-                  <input value={org.contact} onChange={(event) => updateOrgField("contact", event.target.value)} placeholder="ejemplo@empresa.com | +52..." required />
+                <label className={styles.field}>
+                  Correo corporativo
+                  <input type="email" value={org.email} onChange={(event) => updateOrgField("email", event.target.value)} placeholder="nombre@empresa.com" required />
+                </label>
+
+                <label className={styles.field}>
+                  Teléfono
+                  <input type="tel" value={org.phone} onChange={(event) => updateOrgField("phone", event.target.value)} placeholder="+52 55 0000 0000" required />
+                </label>
+
+                <label className={`${styles.consent} ${styles.full}`}>
+                  <input type="checkbox" required />
+                  <span>Acepto aviso de privacidad y entiendo que el resultado es orientativo.</span>
                 </label>
 
                 <div className={`${styles.full} ${styles.wizardActions}`}>
                   <button className="button buttonPrimary" type="button" onClick={handleStart} style={{ width: "100%" }}>
-                    Iniciar Evaluación ISO &rarr;
+                    Generar diagnóstico inteligente
                   </button>
                 </div>
               </form>
@@ -429,7 +441,24 @@ export function PublicDiagnostic() {
 
           {/* PASO 4: Resultados y Reporte Final */}
           {currentStep === 4 && (
-            <div className={styles.resultsLayout}>
+            <div className={`${styles.resultsLayout} diagnostic-print-report`}>
+              <header className={styles.printHeader}>
+                <div>
+                  <strong>TransiQ</strong>
+                  <span>by ISOsolutions</span>
+                </div>
+                <div className={styles.printHeaderMeta}>
+                  <p>Reporte ejecutivo preliminar</p>
+                  <span>{new Date().toLocaleDateString("es-MX", { dateStyle: "long" })}</span>
+                </div>
+                <dl>
+                  <div><dt>Empresa</dt><dd>{org.company}</dd></div>
+                  <div><dt>Contacto</dt><dd>{org.contactName}</dd></div>
+                  <div><dt>Correo</dt><dd>{org.email}</dd></div>
+                  <div><dt>Teléfono</dt><dd>{org.phone}</dd></div>
+                  <div><dt>Norma</dt><dd>{state.standard.label}</dd></div>
+                </dl>
+              </header>
               <aside className={`cardSurface ${styles.card} ${styles.scoreSidebar}`}>
                 <p className="eyebrow sectionEyebrow">Maturity Score</p>
                 <div className={styles.scoreRing} style={{ ["--score" as string]: state.score }}>
@@ -447,32 +476,29 @@ export function PublicDiagnostic() {
                   {autoSavedStatus === "loading" && (
                     <div className={styles.savingLoader}>
                       <span className={styles.loaderIcon}>⏳</span>
-                      <p>Registrando tus datos en el CRM...</p>
+                      <p>Preparando tu resultado...</p>
                     </div>
                   )}
                   {autoSavedStatus === "success" && (
                     <div className={`${styles.savingLoader} ${styles.saveSuccess}`}>
                       <span className={styles.loaderIcon}>✓</span>
-                      <p><b>¡Lead guardado en el CRM!</b> Un consultor de ISOsolutions revisará tu perfil en breve.</p>
+                      <p><b>Tu diagnóstico está listo.</b> Puedes imprimir, guardar o compartir tu resultado.</p>
                     </div>
                   )}
                   {autoSavedStatus === "error" && (
                     <div className={`${styles.savingLoader} ${styles.saveError}`}>
                       <span className={styles.loaderIcon}>⚠</span>
-                      <p>No se pudo conectar con el CRM de forma automática, pero puedes descargar tu reporte abajo.</p>
+                      <p>Tu resultado está disponible. Puedes imprimirlo o copiar el resumen.</p>
                     </div>
                   )}
                 </div>
 
                 <div className={styles.resultActions}>
-                  <button className="button buttonPrimary" type="button" onClick={printReport}>
-                    Imprimir / Guardar PDF
+                  <button className="button buttonPrimary" type="button" onClick={savePdf}>
+                    Descargar PDF
                   </button>
                   <button className="button buttonSecondary" type="button" onClick={copySummary}>
                     Copiar Resumen
-                  </button>
-                  <button className="button buttonSecondary" type="button" onClick={downloadJson}>
-                    Descargar datos JSON
                   </button>
                   <button className="button buttonGhost" type="button" onClick={resetDiagnostic}>
                     Realizar nuevo diagnóstico
@@ -481,7 +507,7 @@ export function PublicDiagnostic() {
               </aside>
 
               <div className={styles.reportDetails}>
-                <article className={`cardSurface ${styles.card}`}>
+                <article className={`cardSurface ${styles.card} ${styles.resultSectionCard}`}>
                   <p className="eyebrow sectionEyebrow">Análisis Operativo</p>
                   <h2>Brechas de madurez identificadas</h2>
                   <p className={styles.introParagraph}>
@@ -489,7 +515,7 @@ export function PublicDiagnostic() {
                   </p>
 
                   <ul className={styles.gapDetailedList}>
-                    {state.gaps.length ? state.gaps.map((gap, index) => (
+                    {state.gaps.length ? state.gaps.slice(0, 4).map((gap, index) => (
                       <li key={`${gap.domain}-${index}`} className={`${styles.gapItem} ${gap.priority === "Critica" ? styles.gapCritical : gap.priority === "Alta" ? styles.gapHigh : styles.gapMedium}`}>
                         <div className={styles.gapHeader}>
                           <span className={styles.gapPriorityBadge}>{gap.priority}</span>
@@ -503,9 +529,24 @@ export function PublicDiagnostic() {
                       <li>No se detectaron brechas críticas. Tu sistema cuenta con una excelente base.</li>
                     )}
                   </ul>
+                  {state.gaps.length > 4 && (
+                    <details className={styles.moreGaps}>
+                      <summary>Ver {state.gaps.length - 4} brechas adicionales</summary>
+                      <ul className={styles.gapDetailedList}>
+                        {state.gaps.slice(4).map((gap, index) => (
+                          <li key={`${gap.domain}-extra-${index}`} className={`${styles.gapItem} ${gap.priority === "Critica" ? styles.gapCritical : gap.priority === "Alta" ? styles.gapHigh : styles.gapMedium}`}>
+                            <div className={styles.gapHeader}><span className={styles.gapPriorityBadge}>{gap.priority}</span><h3>{gap.domain}</h3></div>
+                            <p className={styles.gapImpact}><b>Impacto:</b> {gap.impact}</p>
+                            <p className={styles.gapAction}><b>Acción recomendada:</b> {gap.action}</p>
+                            <small className={styles.gapEvidence}><b>Evidencia a colectar:</b> {gap.evidence}</small>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
                 </article>
 
-                <article className={`cardSurface ${styles.card} ${styles.planCard}`}>
+                <article className={`cardSurface ${styles.card} ${styles.planCard} ${styles.resultSectionCard}`}>
                   <p className="eyebrow sectionEyebrow">Ruta Crítica</p>
                   <h2>Plan sugerido de transición</h2>
                   <p className={styles.introParagraph}>
@@ -526,7 +567,7 @@ export function PublicDiagnostic() {
                   </div>
                 </article>
 
-                <article className={`cardSurface ${styles.card}`}>
+                <article className={`cardSurface ${styles.card} ${styles.resultSectionCard} ${styles.servicesCard}`}>
                   <p className="eyebrow sectionEyebrow">Servicios Recomendados</p>
                   <h2>Siguientes pasos sugeridos</h2>
                   <p>Para acelerar tu proceso y mitigar brechas críticas antes de tu auditoría formal, te recomendamos:</p>
@@ -539,6 +580,40 @@ export function PublicDiagnostic() {
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      <section className={`section ${styles.shareSection}`}>
+        <div className="shell">
+          <div className="sectionHeading">
+            <h2>Diseñado para ser orgánico y compartible.</h2>
+            <p>El resultado preliminar puede imprimirse, copiarse, enviarse al equipo e iniciar una conversación interna antes de una demo o propuesta.</p>
+          </div>
+          <div className={styles.infoGrid}>
+            <article className="cardSurface"><h3>Compartir</h3><p>Texto listo para LinkedIn, WhatsApp o correo.</p></article>
+            <article className="cardSurface"><h3>Invitar equipo</h3><p>Permite que otros responsables completen la evaluación.</p></article>
+            <article className="cardSurface"><h3>Continuar</h3><p>Conecta con demo, recurso o diagnóstico profundo.</p></article>
+            <article className="cardSurface"><h3>CRM</h3><p>Genera datos de país, norma, urgencia y score comercial.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section className={`section ${styles.faqSection}`}>
+        <div className="shell">
+          <div className="sectionHeading"><h2>Preguntas frecuentes del diagnóstico.</h2></div>
+          <div className={styles.faqList}>
+            <details><summary>¿El diagnóstico sustituye una auditoría?</summary><p>No. Es una herramienta orientativa de preparación, no una decisión de certificación.</p></details>
+            <details><summary>¿Puedo usarlo para varios países?</summary><p>Sí. El formulario contempla México, LATAM, Europa, Asia, India y otros mercados.</p></details>
+            <details><summary>¿Puedo evaluar un sistema integrado?</summary><p>Sí. Puedes seleccionar rutas multinorma y sistemas integrados.</p></details>
+          </div>
+        </div>
+      </section>
+
+      <section className={`section ${styles.finalCta}`}>
+        <div className={styles.finalCtaBg} />
+        <div className={`shell ${styles.finalMessage}`}>
+          <h2>Empieza con un resultado, no con una reunión.</h2>
+          <p>Obtén primero tu lectura automática y después decide si quieres demo, recursos o apoyo especializado.</p>
         </div>
       </section>
 

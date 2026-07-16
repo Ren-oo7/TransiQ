@@ -22,6 +22,8 @@
 .panelCard {
   display: grid;
   gap: 12px;
+  border-color: rgba(131, 151, 173, 0.14);
+  box-shadow: 0 10px 26px rgba(8, 33, 62, 0.045);
 }
 
 .heroCard h1,
@@ -149,6 +151,69 @@
   padding: 16px;
   border-radius: 16px;
   background: #f6fafd;
+  border: 1px solid rgba(131, 151, 173, 0.08);
+}
+
+.createForm {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.createForm label,
+.controlField {
+  display: grid;
+  gap: 7px;
+  font-weight: 800;
+}
+
+.createForm input,
+.createForm select,
+.controlField select,
+.passwordRow input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid rgba(131, 151, 173, 0.22);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--color-text);
+  font: inherit;
+}
+
+.activeBadge,
+.inactiveBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 11px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.activeBadge { background: rgba(20, 122, 83, 0.12); color: var(--color-success); }
+.inactiveBadge { background: rgba(95, 105, 118, 0.14); color: #44505d; }
+
+.passwordRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 30;
+  max-width: min(380px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(8, 33, 62, 0.96);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(8, 33, 62, 0.16);
+  font-weight: 800;
 }
 
 .personCard {
@@ -213,6 +278,8 @@
   .peopleGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .createForm { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 960px) {
@@ -229,6 +296,8 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .createForm { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {
@@ -238,4 +307,6 @@
   .panelCard {
     padding: 20px;
   }
+
+  .passwordRow { grid-template-columns: 1fr; }
 }

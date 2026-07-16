@@ -3,6 +3,11 @@
 @import "../styles/utilities.css";
 
 @media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
   body {
     background: white;
     color: black;
@@ -11,5 +16,22 @@
   header,
   footer {
     display: none !important;
+  }
+
+  body.diagnostic-print-mode * {
+    visibility: hidden !important;
+  }
+
+  body.diagnostic-print-mode .diagnostic-print-report,
+  body.diagnostic-print-mode .diagnostic-print-report * {
+    visibility: visible !important;
+  }
+
+  body.diagnostic-print-mode .diagnostic-print-report {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
   }
 }

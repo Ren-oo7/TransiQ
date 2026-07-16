@@ -6,6 +6,9 @@
 } from "@/data/diagnostic-content";
 
 export type OrgData = {
+  contactName: string;
+  email: string;
+  phone: string;
   company: string;
   country: string;
   sector: string;
@@ -122,6 +125,9 @@ const serviceMap = {
 
 export function createInitialOrgData(): OrgData {
   return {
+    contactName: "",
+    email: "",
+    phone: "",
     company: "",
     country: "Mexico",
     sector: "",
@@ -136,7 +142,8 @@ export function createInitialOrgData(): OrgData {
 }
 
 export function createInitialAnswers(standardKey = "qms") {
-  return Array.from({ length: standards[standardKey].questions.length }, () => "");
+  const standard = standards[standardKey] ?? standards.qms;
+  return Array.from({ length: standard.questions.length }, () => "");
 }
 
 export function computeDiagnostic(org: OrgData, answers: string[]): DiagnosticState {

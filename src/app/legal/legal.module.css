@@ -1,0 +1,105 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 90px 0;
+  background:
+    radial-gradient(circle at 84% 20%, rgba(12, 134, 199, 0.2), transparent 28rem),
+    linear-gradient(135deg, #061427, #08213e 58%, #0a3a5b);
+  color: white;
+}
+
+.hero::after {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 50px 50px;
+  content: "";
+  mask-image: linear-gradient(90deg, black, transparent 80%);
+  pointer-events: none;
+}
+
+.hero :global(.shell) { position: relative; z-index: 1; }
+
+.hero h1 {
+  max-width: 850px;
+  margin: 0 0 18px;
+  color: white;
+  font-size: clamp(2.8rem, 5vw, 4.8rem);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.hero p:not(:first-child) {
+  max-width: 65ch;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 1.08rem;
+  line-height: 1.7;
+}
+
+.contentSection { background: linear-gradient(180deg, #f7fafd, #eef4fa); }
+
+.layout {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+}
+
+.summary {
+  padding: 25px;
+  border: 1px solid rgba(8, 33, 62, 0.09);
+  border-radius: var(--radius-md);
+  background: #082d49;
+  box-shadow: 0 20px 55px rgba(8, 33, 62, 0.16);
+}
+
+.summary span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--color-accent-soft);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.summary strong { color: white; }
+.summary p { margin: 18px 0 0; color: rgba(255, 255, 255, 0.66); font-size: 0.9rem; line-height: 1.6; }
+
+.document {
+  padding: clamp(28px, 5vw, 52px);
+  border-color: rgba(8, 33, 62, 0.08);
+  box-shadow: 0 28px 80px rgba(8, 33, 62, 0.09);
+}
+
+.document section + section {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid var(--color-line);
+}
+
+.document h2 {
+  margin: 0 0 11px;
+  color: var(--color-primary-strong);
+  font-size: 1.2rem;
+}
+
+.document p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.75;
+}
+
+.document :global(.button) { margin-top: 20px; }
+
+@media (min-width: 900px) {
+  .layout { grid-template-columns: minmax(220px, 0.32fr) minmax(0, 1fr); }
+  .summary { position: sticky; top: 105px; }
+}
+
+@media (max-width: 640px) {
+  .hero { padding: 70px 0; }
+  .document { padding: 26px 22px; }
+}

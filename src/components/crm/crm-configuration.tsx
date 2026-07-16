@@ -187,7 +187,7 @@ export function CrmConfiguration({ session, users, config }: CrmConfigurationPro
 
           <ul className={styles.notesList}>
             <li>Editar etapas y prioridades desde UI, no solo desde código.</li>
-            <li>Agregar alta y baja de usuarios internos del CRM.</li>
+            <li>Definir políticas de contraseña, caducidad de sesión y recuperación de acceso.</li>
             <li>Gestionar permisos por rol con mayor granularidad.</li>
             <li>Centralizar variables visibles del negocio como URL de app y mensajes operativos.</li>
           </ul>

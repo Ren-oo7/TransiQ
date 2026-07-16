@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { AdminSession } from "@/lib/admin-auth-types";
-import { formatLeadStage, type SavedLead } from "@/lib/lead-types";
+import type { SavedLead } from "@/lib/lead-types";
 import styles from "./crm-campaigns.module.css";
 
 type CrmCampaignsProps = {
@@ -39,20 +39,6 @@ function formatSourceLabel(value: string) {
   return value.trim() || "Sin fuente";
 }
 
-function formatUrgency(value: string) {
-  if (value === "critica") return "Crítica";
-  if (value === "alta") return "Alta";
-  if (value === "media") return "Media";
-  if (value === "baja") return "Baja";
-  return value || "Sin dato";
-}
-
-function getConversionLabel(value: number) {
-  if (value >= 60) return "Tracción alta";
-  if (value >= 30) return "Tracción media";
-  return "Tracción inicial";
-}
-
 function getSourceParts(value: string) {
   return value
     .split("·")
@@ -69,12 +55,12 @@ function getSourceFamily(source: string) {
   if (normalized.includes("diagnóstico público") || normalized.includes("diagnostico público")) {
     if (normalized.includes("solucion-")) return "Página por norma";
     if (normalized.includes("hero-principal") || normalized.includes("bloque-")) return "Home";
-    if (normalized.includes("header") || normalized.includes("footer") || normalized.includes("navegacion")) return "Navegación";
+    if (normalized.includes("header") || normalized.includes("footer") || normalized.includes("navegacion")) return "Accesos generales del sitio";
     return "Diagnóstico";
   }
   if (normalized.includes("solucion-")) return "Página por norma";
   if (normalized.includes("hero-principal") || normalized.includes("bloque-") || normalized.includes("cta-final")) return "Home";
-  if (normalized.includes("header") || normalized.includes("footer") || normalized.includes("navegacion")) return "Navegación";
+  if (normalized.includes("header") || normalized.includes("footer") || normalized.includes("navegacion")) return "Accesos generales del sitio";
   return "Otros canales";
 }
 
@@ -153,11 +139,11 @@ function getFamilySummaries(leads: SavedLead[]) {
     .sort((a, b) => b.count - a.count || b.avgLeadScore - a.avgLeadScore);
 }
 
-function getSegmentSummary(leads: SavedLead[], field: "standardShort" | "urgency") {
+function getStandardSummary(leads: SavedLead[]) {
   const grouped = new Map<string, SavedLead[]>();
 
   leads.forEach((lead) => {
-    const key = field === "standardShort" ? lead.diagnostic.standardShort : formatUrgency(lead.org.urgency);
+    const key = lead.diagnostic.standardShort;
     const current = grouped.get(key) ?? [];
     current.push(lead);
     grouped.set(key, current);
@@ -177,58 +163,50 @@ function getSegmentSummary(leads: SavedLead[], field: "standardShort" | "urgency
 export function CrmCampaigns({ leads, session }: CrmCampaignsProps) {
   const familySummaries = getFamilySummaries(leads);
   const sourceSummaries = getSourceSummaries(leads);
-  const activeSources = sourceSummaries.length;
   const activeFamilies = familySummaries.length;
+  const activeSources = sourceSummaries.length;
+  const topSource = sourceSummaries[0];
   const strategicLeads = leads.filter((lead) => lead.diagnostic.lead.score >= 70).length;
-  const engagedLeads = leads.filter((lead) => lead.status !== "Nuevo").length;
-  const engagedRate = leads.length ? Math.round((engagedLeads / leads.length) * 100) : 0;
   const proposalRate = leads.length
     ? Math.round((leads.filter((lead) => ["Demo agendada", "Propuesta enviada", "Cerrado"].includes(lead.status)).length / leads.length) * 100)
     : 0;
-  const staleLeads = [...leads]
-    .filter((lead) => {
-      const ageInDays = (Date.now() - new Date(lead.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-      return lead.status !== "Cerrado" && ageInDays >= 7;
-    })
-    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-    .slice(0, 5);
-  const topStandards = getSegmentSummary(leads, "standardShort");
-  const topUrgencies = getSegmentSummary(leads, "urgency");
+  const topStandards = getStandardSummary(leads);
 
   return (
     <main className={styles.wrapper}>
       <section className={styles.hero}>
         <article className={`cardSurface ${styles.heroCard}`}>
-          <p className="eyebrow">Campañas comerciales</p>
-          <h1>Lea qué canales están trayendo oportunidades y qué segmentos merecen más inversión comercial.</h1>
+          <p className="eyebrow">Canales de captación</p>
+          <h1>Identifique de dónde llegan los leads y qué fuentes generan mejores oportunidades.</h1>
           <p>
-            Esta vista separa captación y pipeline para entender de dónde vienen los leads, qué tan prometedores son y
-            dónde conviene activar seguimiento, contenido, pauta o outreach.
+            Esta vista compara el volumen y la calidad comercial de cada origen para decidir qué accesos, contenidos y
+            formularios conviene fortalecer.
           </p>
           <div className={styles.chips}>
             <span className={styles.chip}>Responsable activo: {session.name}</span>
             <span className={styles.chip}>Rol: {session.role}</span>
-            <span className={styles.chip}>Canales ejecutivos: {activeFamilies}</span>
+            <span className={styles.chip}>Canales agrupados: {activeFamilies}</span>
+            <span className={styles.chip}>Fuentes específicas: {activeSources}</span>
           </div>
         </article>
 
         <article className={`cardSurface ${styles.highlightCard}`}>
-          <span className={styles.highlightLabel}>Conversación activada</span>
-          <div className={styles.highlightValue}>{engagedRate}%</div>
-          <p>{getConversionLabel(engagedRate)} de seguimiento sobre el total captado.</p>
-          <span className={styles.highlightMeta}>{engagedLeads} de {leads.length} leads ya salieron de la etapa Nuevo.</span>
+          <span className={styles.highlightLabel}>Fuente con mayor captación</span>
+          <div className={styles.highlightSource}>{topSource?.source || "Sin datos"}</div>
+          <p>{topSource ? `${topSource.count} leads · score promedio ${topSource.avgLeadScore}` : "Aún no hay fuentes registradas."}</p>
+          <span className={styles.highlightMeta}>Comparativo basado en los leads guardados actualmente.</span>
         </article>
       </section>
 
       <section className={styles.metricGrid}>
         <article className={`cardSurface ${styles.metricCard}`}>
-          <span className="miniLabel">Canales ejecutivos</span>
-          <div className={styles.metricValue}>{activeFamilies}</div>
-          <p>Familias comerciales consolidadas para lectura rápida de dirección.</p>
+          <span className="miniLabel">Leads captados</span>
+          <div className={styles.metricValue}>{leads.length}</div>
+          <p>Registros recibidos desde todos los orígenes del sitio.</p>
         </article>
 
         <article className={`cardSurface ${styles.metricCard}`}>
-          <span className="miniLabel">Leads estratégicos</span>
+          <span className="miniLabel">Leads prioritarios</span>
           <div className={styles.metricValue}>{strategicLeads}</div>
           <p>Prospectos con score de oportunidad alto para priorizar inversión comercial.</p>
         </article>
@@ -240,17 +218,17 @@ export function CrmCampaigns({ leads, session }: CrmCampaignsProps) {
         </article>
 
         <article className={`cardSurface ${styles.metricCard}`}>
-          <span className="miniLabel">Leads por reactivar</span>
-          <div className={styles.metricValue}>{staleLeads.length}</div>
-          <p>Oportunidades abiertas con más de 7 días sin cierre, útiles para una campaña de seguimiento.</p>
+          <span className="miniLabel">Fuentes activas</span>
+          <div className={styles.metricValue}>{activeSources}</div>
+          <p>Orígenes específicos identificados en los registros actuales.</p>
         </article>
       </section>
 
       <section className={styles.sectionBlock}>
         <div className={styles.sectionHeader}>
           <div>
-            <p className="eyebrow sectionEyebrow">Vista ejecutiva</p>
-            <h2>Canales comerciales consolidados</h2>
+            <p className="eyebrow sectionEyebrow">Vista general</p>
+            <h2>Canales de captación agrupados</h2>
           </div>
           <Link className="button buttonSecondary" href="/crm/leads">
             Ir a leads
@@ -303,8 +281,8 @@ export function CrmCampaigns({ leads, session }: CrmCampaignsProps) {
           </div>
         ) : (
           <article className={`cardSurface ${styles.emptyCard}`}>
-            <h3>Aún no hay campañas registradas.</h3>
-            <p>Cuando entren leads con fuente definida, aquí veremos qué canales convierten mejor.</p>
+            <h3>Aún no hay fuentes registradas.</h3>
+            <p>Cuando entren leads con origen definido, aquí veremos qué canales generan mejores oportunidades.</p>
           </article>
         )}
       </section>
@@ -344,7 +322,7 @@ export function CrmCampaigns({ leads, session }: CrmCampaignsProps) {
         ) : null}
       </section>
 
-      <section className={styles.dualGrid}>
+      <section className={styles.sectionBlock}>
         <article className={`cardSurface ${styles.segmentCard}`}>
           <div className={styles.sectionHeader}>
             <div>
@@ -359,7 +337,7 @@ export function CrmCampaigns({ leads, session }: CrmCampaignsProps) {
                 <li key={item.label}>
                   <div>
                     <strong>{item.label}</strong>
-                    <span>{item.count} registros · {item.strategic} estratégicos</span>
+                    <span>{item.count} registros · {item.strategic} prioritarios</span>
                   </div>
                   <small>{item.open} abiertos</small>
                 </li>
@@ -368,78 +346,6 @@ export function CrmCampaigns({ leads, session }: CrmCampaignsProps) {
           ) : (
             <p className={styles.emptyText}>Los segmentos aparecerán cuando el CRM reciba leads reales.</p>
           )}
-        </article>
-
-        <article className={`cardSurface ${styles.segmentCard}`}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <p className="eyebrow sectionEyebrow">Prioridad</p>
-              <h2>Urgencias que dominan la demanda</h2>
-            </div>
-          </div>
-
-          {topUrgencies.length ? (
-            <ul className={styles.segmentList}>
-              {topUrgencies.map((item) => (
-                <li key={item.label}>
-                  <div>
-                    <strong>{item.label}</strong>
-                    <span>{item.count} registros · {item.strategic} estratégicos</span>
-                  </div>
-                  <small>{item.open} abiertos</small>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={styles.emptyText}>La lectura de urgencias se alimentará conforme entren oportunidades.</p>
-          )}
-        </article>
-      </section>
-
-      <section className={styles.dualGrid}>
-        <article className={`cardSurface ${styles.segmentCard}`}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <p className="eyebrow sectionEyebrow">Reactivos</p>
-              <h2>Leads que piden una campaña de seguimiento</h2>
-            </div>
-            <Link className="button buttonGhost" href="/crm/pipeline">
-              Ver pipeline
-            </Link>
-          </div>
-
-          {staleLeads.length ? (
-            <ul className={styles.followList}>
-              {staleLeads.map((lead) => (
-                <li key={lead.id}>
-                  <div className={styles.followTop}>
-                    <strong>{lead.org.company || "Sin nombre"}</strong>
-                    <span>{formatLeadStage(lead.status)}</span>
-                  </div>
-                  <p>{formatSourceLabel(lead.source)} · {lead.org.contact}</p>
-                  <small>{formatDate(lead.createdAt)} · Score {lead.diagnostic.lead.score}/100</small>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={styles.emptyText}>Por ahora no hay leads envejecidos que justifiquen una campaña de reactivación.</p>
-          )}
-        </article>
-
-        <article className={`cardSurface ${styles.segmentCard}`}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <p className="eyebrow sectionEyebrow">Lectura ejecutiva</p>
-              <h2>Qué hacer con esta vista</h2>
-            </div>
-          </div>
-
-          <ul className={styles.notesList}>
-            <li>Leer primero la familia comercial y luego bajar al detalle de fuente cuando haga falta.</li>
-            <li>Comparar volumen contra calidad: no solo cuántos leads entran, sino cuántos avanzan.</li>
-            <li>Activar nurturing para leads nuevos y reactivación para leads detenidos por canal.</li>
-            <li>Con más datos, esta vista puede crecer a costo por lead, CAC comercial y cierre por canal.</li>
-          </ul>
         </article>
       </section>
     </main>
